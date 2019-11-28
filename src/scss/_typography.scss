@@ -1,0 +1,117 @@
+// Graphene Design System
+// http://bit.ly/graphenedesign
+// Typography tokens and styles
+
+// Font import from Google Fonts
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700&display=swap");
+
+$__fonts-alt: "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+$__font-family: "Source Sans Pro";
+$graphene-font-family: #{$__font-family}, #{$__fonts-alt};
+
+$font-sizes: (
+  "feature": rem(60px),
+  "supheading": rem(48px),
+  "heading": rem(32px),
+  "subheading": rem(24px),
+  "interest": rem(20px),
+  "paragraph": rem(16px),
+  "label": rem(14px),
+  "meta": rem(12px),
+  "disclaimer": rem(10px)
+);
+$graphene-font-size-feature: map-get($font-sizes, "feature");
+$graphene-font-size-supheading: map-get($font-sizes, "supheading");
+$graphene-font-size-heading: map-get($font-sizes, "heading");
+$graphene-font-size-subheading: map-get($font-sizes, "subheading");
+$graphene-font-size-interest: map-get($font-sizes, "interest");
+$graphene-font-size-paragraph: map-get($font-sizes, "paragraph");
+$graphene-font-size-label: map-get($font-sizes, "label");
+$graphene-font-size-meta: map-get($font-sizes, "meta");
+$graphene-font-size-disclaimer: map-get($font-sizes, "disclaimer");
+
+$font-weights: (
+  "light": 300,
+  "regular": 400,
+  "semibold": 600,
+  "bold": 700
+);
+$graphene-font-weight-light: map-get($font-weights, "light");
+$graphene-font-weight-regular: map-get($font-weights, "regular");
+$graphene-font-weight-semibold: map-get($font-weights, "semibold");
+$graphene-font-weight-bold: map-get($font-weights, "bold");
+
+// Text styles
+%__fonts_shared {
+  font-family: $graphene-font-family;
+  font-style: normal;
+}
+
+%graphene-font-style-feature {
+  font-size: $graphene-font-size-feature;
+  font-weight: $graphene-font-weight-regular;
+  font-feature-settings: "ss04" on;
+  letter-spacing: -0.03em;
+  line-height: rem(72px);
+  @extend %__fonts_shared;
+}
+%graphene-font-style-supheading {
+  font-size: $graphene-font-size-supheading;
+  font-weight: $graphene-font-weight-regular;
+  font-feature-settings: "salt" on;
+  letter-spacing: -0.02em;
+  line-height: rem(60px);
+  @extend %__fonts_shared;
+}
+%graphene-font-style-heading {
+  font-size: $graphene-font-size-heading;
+  font-weight: $graphene-font-weight-semibold;
+  font-feature-settings: "salt" on;
+  letter-spacing: -0.01em;
+  line-height: rem(40px);
+  @extend %__fonts_shared;
+}
+%graphene-font-style-subheading {
+  font-size: $graphene-font-size-subheading;
+  font-weight: $graphene-font-weight-semibold;
+  font-feature-settings: "cpsp" on;
+  line-height: rem(40px);
+  @extend %__fonts_shared;
+}
+%graphene-font-style-interest {
+  font-size: $graphene-font-size-interest;
+  font-weight: $graphene-font-weight-semibold;
+  letter-spacing: -0.01em;
+  line-height: rem(32px);
+  @extend %__fonts_shared;
+}
+%graphene-font-style-paragraph {
+  font-size: $graphene-font-size-paragraph;
+  font-weight: $graphene-font-weight-regular;
+  letter-spacing: 0.02em;
+  line-height: rem(24px);
+  @extend %__fonts_shared;
+}
+%graphene-font-style-label {
+  font-size: $graphene-font-size-label;
+  font-weight: $graphene-font-weight-regular;
+  letter-spacing: 0.03em;
+  line-height: rem(20px);
+  @extend %__fonts_shared;
+}
+%graphene-font-style-meta {
+  font-size: $graphene-font-size-meta;
+  font-weight: $graphene-font-weight-regular;
+  font-feature-settings: "zero" on, "cpsp" on;
+  letter-spacing: 0.041em;
+  line-height: rem(16px);
+  @extend %__fonts_shared;
+}
+%graphene-font-style-disclaimer {
+  font-size: $graphene-font-size-disclaimer;
+  font-weight: $graphene-font-weight-semibold;
+  font-feature-settings: "cpsp" on, "zero" on, "ss05" on, "salt" on;
+  letter-spacing: 0.08em;
+  line-height: rem(16px);
+  @extend %__fonts_shared;
+}

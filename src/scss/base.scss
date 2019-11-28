@@ -1,0 +1,36 @@
+@import "utils";
+@import "colors";
+@import "typography";
+@import "icons";
+@import "variables";
+
+:root {
+  color-scheme: light dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  user-select: none;
+}
+
+body {
+  bottom: 0;
+  display: block;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+}
+
+h1 {
+  text-align: center;
+  @extend %graphene-font-style-heading;
+}

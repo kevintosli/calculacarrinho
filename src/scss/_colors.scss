@@ -1,0 +1,75 @@
+// Graphene Design System
+// http://bit.ly/graphenedesign
+// Color palette tokens
+
+// Monochromatic
+// Blacks and whites are not opaque
+$graphene-color-black-200: hsla(0, 0%, 0%, 0.08);
+$graphene-color-black-300: hsla(0, 0%, 0%, 0.2);
+$graphene-color-black-400: hsla(0, 0%, 0%, 0.4);
+$graphene-color-black-500: hsla(0, 0%, 0%, 0.6);
+$graphene-color-black-600: hsla(0, 0%, 0%, 0.8);
+$graphene-color-black-700: hsla(0, 0%, 0%, 1); // Pure black
+
+$graphene-color-white-200: hsla(0, 0%, 100%, 1); // Pure white
+$graphene-color-white-300: hsla(0, 0%, 100%, 0.76);
+$graphene-color-white-400: hsla(0, 0%, 100%, 0.48);
+$graphene-color-white-500: hsla(0, 0%, 100%, 0.24);
+$graphene-color-white-600: hsla(0, 0%, 100%, 0.15);
+$graphene-color-white-700: hsla(0, 0%, 100%, 0.09);
+
+$graphene-color-gray-200: hsl(209, 19%, 95%);
+$graphene-color-gray-300: hsl(209, 10%, 80%);
+$graphene-color-gray-400: hsl(209, 3%, 55%);
+$graphene-color-gray-500: hsl(209, 3%, 43%);
+$graphene-color-gray-600: hsl(209, 3%, 14%);
+$graphene-color-gray-700: hsl(209, 3%, 6%);
+
+// Colors
+$graphene-color-redish-300: hsl(14, 68%, 56%);
+$graphene-color-redish-400: hsl(14, 69%, 50%);
+$graphene-color-redish-500: hsl(14, 70%, 43%);
+
+$graphene-color-orange-300: hsl(30, 76%, 55%);
+$graphene-color-orange-400: hsl(30, 89%, 46%);
+$graphene-color-orange-500: hsl(30, 89%, 40%);
+
+$graphene-color-yellow-300: hsl(48, 81%, 64%);
+$graphene-color-yellow-400: hsl(48, 82%, 51%);
+$graphene-color-yellow-500: hsl(48, 79%, 42%);
+
+$graphene-color-lime-300: hsl(86, 51%, 59%);
+$graphene-color-lime-400: hsl(86, 56%, 47%);
+$graphene-color-lime-500: hsl(86, 57%, 39%);
+
+$graphene-color-green-300: hsl(134, 44%, 55%);
+$graphene-color-green-400: hsl(134, 59%, 43%);
+$graphene-color-green-500: hsl(134, 59%, 35%);
+
+$graphene-color-turquoise-300: hsl(174, 61%, 67%);
+$graphene-color-turquoise-400: hsl(174, 67%, 48%);
+$graphene-color-turquoise-500: hsl(174, 67%, 40%);
+
+$graphene-color-cyan-300: hsl(196, 85%, 68%);
+$graphene-color-cyan-400: hsl(196, 85%, 54%);
+$graphene-color-cyan-500: hsl(196, 74%, 45%);
+
+$graphene-color-blue-300: hsl(214, 72%, 60%);
+$graphene-color-blue-400: hsl(214, 71%, 51%);
+$graphene-color-blue-500: hsl(214, 70%, 42%);
+
+$graphene-color-indigo-300: hsl(230, 55%, 62%);
+$graphene-color-indigo-400: hsl(230, 55%, 56%);
+$graphene-color-indigo-500: hsl(230, 43%, 46%);
+
+$graphene-color-purple-300: hsl(267, 76%, 66%);
+$graphene-color-purple-400: hsl(267, 75%, 58%);
+$graphene-color-purple-500: hsl(267, 54%, 48%);
+
+$graphene-color-magenta-300: hsl(292, 68%, 61%);
+$graphene-color-magenta-400: hsl(292, 68%, 54%);
+$graphene-color-magenta-500: hsl(292, 59%, 45%);
+
+$graphene-color-pink-300: hsl(338, 73%, 66%);
+$graphene-color-pink-400: hsl(338, 73%, 62%);
+$graphene-color-pink-500: hsl(338, 48%, 51%);

@@ -1,0 +1,53 @@
+// Graphene Design System
+// http://bit.ly/graphenedesign
+// Browser's default stylings reset
+
+body {
+  font-size: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+
+  &:link,
+  &:visited {
+    color: inherit;
+  }
+}
+
+input {
+  appearance: none;
+  font: inherit;
+}
+
+ol,
+ul {
+  margin: 0;
+  padding: 0;
+
+  li {
+    padding: 0;
+  }
+}
+ul {
+  list-style: none;
+}

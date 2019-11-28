@@ -1,0 +1,30 @@
+// $color-text-paragraph: $graphene-color-black-600;
+
+// CSS Variables
+html {
+  --ui-border-radius-regular: #{rem(3px)};
+  --ui-border-radius-circular: #{rem(999px)};
+
+  --color-text-heading: #{$graphene-color-black-700};
+  --color-text-paragraph: #{$graphene-color-black-600};
+  --color-text-placeholder: #{$graphene-color-black-400};
+  --color-ui-accent: #{$graphene-color-green-400};
+  --color-ui-highlight: #{$graphene-color-gray-400};
+  --color-ui-background: #{$graphene-color-white-200};
+  --color-ui-separator: #{$graphene-color-black-200};
+  --color-ui-listalt: hsla(0, 0%, 0%, 0.03);
+
+  --transition-duration-regular: 380ms;
+  --transition-timing-ease_out: cubic-bezier(0.14, 0.14, 0.03, 0.9);
+
+  @media (prefers-color-scheme: dark) {
+    --color-text-heading: #{$graphene-color-white-200};
+    --color-text-paragraph: #{$graphene-color-white-200};
+    --color-text-placeholder: #{$graphene-color-white-400};
+    --color-ui-accent: #{$graphene-color-green-300};
+    --color-ui-highlight: #{$graphene-color-gray-600};
+    --color-ui-background: #{$graphene-color-black-700};
+    --color-ui-separator: #{$graphene-color-white-600};
+    --color-ui-listalt: hsla(0, 0%, 100%, 0.05);
+  }
+}

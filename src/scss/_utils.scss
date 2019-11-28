@@ -1,0 +1,9 @@
+// Graphene Design System
+// http://bit.ly/graphenedesign
+// Stylesheets utils, helpers and functions
+
+@function rem($size) {
+  $fontsize-base: 16px;
+  $remSize: $size / $fontsize-base;
+  @return #{$remSize}rem;
+}

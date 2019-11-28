@@ -1,0 +1,40 @@
+// Graphene Design System
+// http://bit.ly/graphenedesign
+// Icons tokens and styles
+
+// Font face definition
+$__font_path: "./assets/fonts/";
+
+@font-face {
+  font-family: "GrapheneIconsPro";
+  src: local("GrapheneIconsPro"), url($__font_path+"GrapheneIconsPro.ttf") format("truetype"), url($__font_path+"GrapheneIconsPro.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+$graphene-icons-font-family: "GrapheneIconsPro";
+
+// Styles
+.grphn-icon {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: $graphene-icons-font-family !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  letter-spacing: 0;
+  -webkit-font-feature-settings: "liga";
+  -moz-font-feature-settings: "liga=1";
+  -moz-font-feature-settings: "liga";
+  -ms-font-feature-settings: "liga" 1;
+  font-feature-settings: "liga";
+  -webkit-font-variant-ligatures: discretionary-ligatures;
+  font-variant-ligatures: discretionary-ligatures;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

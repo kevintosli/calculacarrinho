@@ -1,0 +1,11 @@
+$viewport-sm: 576px;
+$viewport-md: 768px;
+$viewport-lg: 992px;
+$viewport-xl: 1200px;
+
+$breakpoints: (
+  sm: $viewport-sm,
+  md: $viewport-md,
+  lg: $viewport-lg,
+  xl: $viewport-xl
+);
