@@ -3,7 +3,7 @@
     <div class="calc-header flex-row">
       <div class="__price flex-grow-1">
         {{
-          input_price.value.toLocaleString("pt-BR", {
+          Number(input_price.value).toLocaleString("pt-BR", {
             style: "currency",
             currency: "BRL"
           })
@@ -13,25 +13,123 @@
     </div>
     <div class="calc-controls" ontouchstart="">
       <!-- Interaction -->
-      <div class="calc-key grphn-icon __accent" style="grid-area: add;">arrow_up</div>
-      <div class="calc-key grphn-icon __accent" style="grid-area: plus;" @click="input_units.add(1)">plus</div>
-      <div class="calc-key grphn-icon __accent" style="grid-area: minus;" @click="input_units.remove(1)">minus</div>
-      <div class="calc-key __accent" style="grid-area: total;" @click="reset_controls">AC</div>
+      <div
+        :class="[
+          'calc-key grphn-icon __accent',
+          {
+            _disabled: is_initial_input_price
+          }
+        ]"
+        style="grid-area: add;"
+        @click="add_to_list"
+      >
+        arrow_up
+      </div>
+      <div
+        class="calc-key grphn-icon __accent"
+        style="grid-area: plus;"
+        @click="input_units.add(1)"
+      >
+        plus
+      </div>
+      <div
+        class="calc-key grphn-icon __accent"
+        style="grid-area: minus;"
+        @click="input_units.remove(1)"
+      >
+        minus
+      </div>
+      <div
+        class="calc-key __accent"
+        style="grid-area: reset;"
+        @click="reset_controls"
+      >
+        {{ is_initial_input_price ? "AC" : "C" }}
+      </div>
       <!-- Numbers -->
-      <div class="calc-key" style="grid-area: r3c1;" @click="input_price.update(1)">1</div>
-      <div class="calc-key" style="grid-area: r3c2;" @click="input_price.update(2)">2</div>
-      <div class="calc-key" style="grid-area: r3c3;" @click="input_price.update(3)">3</div>
-      <div class="calc-key" style="grid-area: r2c1;" @click="input_price.update(4)">4</div>
-      <div class="calc-key" style="grid-area: r2c2;" @click="input_price.update(5)">5</div>
-      <div class="calc-key" style="grid-area: r2c3;" @click="input_price.update(6)">6</div>
-      <div class="calc-key" style="grid-area: r1c1;" @click="input_price.update(7)">7</div>
-      <div class="calc-key" style="grid-area: r1c2;" @click="input_price.update(8)">8</div>
-      <div class="calc-key" style="grid-area: r1c3;" @click="input_price.update(9)">9</div>
-      <div class="calc-key __key-zero" style="grid-area: zero;" @click="input_price.update(0)">
+      <div
+        class="calc-key"
+        style="grid-area: r3c1;"
+        @click="input_price.update(1)"
+      >
+        1
+      </div>
+      <div
+        class="calc-key"
+        style="grid-area: r3c2;"
+        @click="input_price.update(2)"
+      >
+        2
+      </div>
+      <div
+        class="calc-key"
+        style="grid-area: r3c3;"
+        @click="input_price.update(3)"
+      >
+        3
+      </div>
+      <div
+        class="calc-key"
+        style="grid-area: r2c1;"
+        @click="input_price.update(4)"
+      >
+        4
+      </div>
+      <div
+        class="calc-key"
+        style="grid-area: r2c2;"
+        @click="input_price.update(5)"
+      >
+        5
+      </div>
+      <div
+        class="calc-key"
+        style="grid-area: r2c3;"
+        @click="input_price.update(6)"
+      >
+        6
+      </div>
+      <div
+        class="calc-key"
+        style="grid-area: r1c1;"
+        @click="input_price.update(7)"
+      >
+        7
+      </div>
+      <div
+        class="calc-key"
+        style="grid-area: r1c2;"
+        @click="input_price.update(8)"
+      >
+        8
+      </div>
+      <div
+        class="calc-key"
+        style="grid-area: r1c3;"
+        @click="input_price.update(9)"
+      >
+        9
+      </div>
+      <div
+        class="calc-key __key-zero"
+        style="grid-area: zero;"
+        @click="input_price.update(0)"
+      >
         <div class="__key-zero-1" style="grid-area: key1;">0</div>
         <div class="__key-zero-2" style="grid-area: key2;">0</div>
       </div>
-      <div class="calc-key grphn-icon" style="grid-area: erase;" @click="input_price.backspace">delete_left</div>
+      <div
+        :class="[
+          'calc-key grphn-icon',
+          {
+            _disabled: is_initial_input_price
+          }
+        ]"
+        style="grid-area: erase;"
+        @click="input_price.backspace"
+      >
+        delete_left
+      </div>
     </div>
   </div>
 </template>
@@ -42,20 +140,31 @@ export default {
   data() {
     return {
       input_price: {
-        value: 0,
+        value: "0.00",
         update: key_value => {
-          if (key_value == "reset") return (this.input_price.value = 0);
-          key_value = key_value / 100;
-          this.input_price.value = this.input_price.value * 10;
-          this.input_price.value += key_value;
-          this.input_price.value.toFixed(2);
+          if (key_value == "reset") return (this.input_price.value = "0.00");
+
+          let VALUE = this.input_price.value;
+          VALUE = String(VALUE)
+            .replace(".", "") // Removing dot
+            .replace(/(\d*)/, `$1${key_value}`) // Adding pressed key to end
+            .replace(/(\d*)(\d{2})/, "$1.$2") // Adding dot again
+            .replace(/(0?)(\d+\.\d*)/, "$2"); // Removing leading zero
+          this.input_price.value = VALUE;
         },
         backspace: () => {
-          if (this.input_price.value == 0) return window.console.log("Não pode apagar mais");
-          // let LAST_DIGIT = String(this.input_price.value).slice(-1);
-          window.console.log("Actual value:", this.input_price.value);
-          window.console.log("Length:", String(this.input_price.value).length);
-          // this.input_price.value -= LAST_DIGIT / 100;
+          if (this.input_price.value == 0)
+            return window.console.log("Não pode apagar mais");
+
+          let VALUE = this.input_price.value;
+          VALUE = String(VALUE)
+            .replace(".", "") // Removing dot
+            .replace(/(\d*)(\d{1})/, "$1"); // Removing last char
+          if (VALUE.length <= 2) {
+            VALUE = String(VALUE).replace(/(\d*)/, "0$1"); // Adding leading zero
+          }
+          VALUE = String(VALUE).replace(/(\d*)(\d{2})/, "$1.$2"); // Adding dot again
+          this.input_price.value = VALUE;
         }
       },
       input_units: {
@@ -64,8 +173,10 @@ export default {
           this.input_units.value += quantity;
         },
         remove: quantity => {
-          if (this.input_units.value == 1) return window.console.log("Não pode remover mais");
-          if (this.input_units.value >= 1) return (this.input_units.value -= quantity);
+          if (this.input_units.value == 1)
+            return window.console.log("Não pode remover mais");
+          if (this.input_units.value >= 1)
+            return (this.input_units.value -= quantity);
         },
         reset: () => {
           this.input_units.value = 1;
@@ -73,7 +184,21 @@ export default {
       }
     };
   },
+  computed: {
+    is_initial_input_price() {
+      return this.input_price.value == "0.00";
+    }
+  },
   methods: {
+    add_to_list() {
+      if (this.is_initial_input_price)
+        return window.console.log("Digite um valor para adicionar");
+      this.$emit("submit", {
+        value: this.input_price.value,
+        units: this.input_units.value
+      });
+      this.reset_controls();
+    },
     reset_controls() {
       this.input_price.update("reset");
       this.input_units.reset();
@@ -104,7 +229,8 @@ export default {
   .calc-header {
     color: var(--color-text-heading);
     padding: rem(8px) calc(var(--app-view-padding) + #{rem(6px)});
-    @extend %graphene-font-style-subheading;
+    font-weight: $graphene-font-weight-semibold;
+    @extend %graphene-font-style-interest;
 
     @media (min-height: 569px) {
       padding: {
@@ -126,10 +252,10 @@ export default {
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr 1fr;
     grid-template-areas:
-      "r1c1 r1c2 r1c3 add"
+      "r1c1 r1c2 r1c3 reset"
       "r2c1 r2c2 r2c3 plus"
       "r3c1 r3c2 r3c3 minus"
-      "zero zero erase total";
+      "zero zero erase add";
     grid-gap: rem(2px);
     margin: 0 var(--app-view-padding);
     overflow: hidden;
@@ -143,14 +269,14 @@ export default {
       min-height: rem(48px);
       transition-property: background-color;
       transition-duration: var(--transition-duration-regular);
-      transition-timing-function: var(--transition-timing-ease_out);
+      transition-timing-function: linear;
       @extend %graphene-font-style-subheading;
 
       @media (min-height: 569px) {
         min-height: rem(64px);
       }
 
-      &:hover:active {
+      &:not(._disabled):hover:active {
         background-color: var(--color-text-placeholder);
         transition-duration: 0ms;
       }
@@ -158,14 +284,8 @@ export default {
       &.__accent {
         background-color: var(--color-ui-accent);
         color: var(--color-ui-background);
-        &:hover:active {
-          background-color: var(--color-text-heading);
-        }
-      }
-      &.__highlight {
-        background-color: var(--color-ui-highlight);
-        color: var(--color-ui-background);
-        &:hover:active {
+
+        &:not(._disabled):hover:active {
           background-color: var(--color-text-heading);
         }
       }
