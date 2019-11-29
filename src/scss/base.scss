@@ -25,7 +25,9 @@ body {
   bottom: 0;
   display: block;
   left: 0;
-  position: fixed;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  position: absolute;
   right: 0;
   top: 0;
 }
