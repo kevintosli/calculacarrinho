@@ -98,6 +98,9 @@ export default new Vuex.Store({
       state.cart_list_updates += 1;
     },
     cart_update({ commit }, { index, payload }) {
+      if (payload.price == "0.00") {
+        return window.console.log("Digite um valor para salvar");
+      }
       commit("cart_update_data", { index, payload });
       setTimeout(() => {
         commit("cart_unselect_all");
