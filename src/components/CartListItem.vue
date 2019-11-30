@@ -78,7 +78,7 @@ cartlist-item {
       display: none;
     }
   }
-  &:hover:active {
+  &:not(._selected):hover:active {
     background-color: var(--color-ui-listalt);
   }
   .__separator {
@@ -88,13 +88,9 @@ cartlist-item {
     right: var(--app-view-padding);
   }
   &._selected {
-    background-color: rgba($color-ui-accent-400, 0.08);
-    color: var(--color-ui-accent);
-    box-shadow: inset 0 0 0 rem(2px) var(--color-ui-accent);
-
-    &:hover:active {
-      background-color: rgba($color-ui-accent-400, 0.12);
-    }
+    background-color: var(--color-ui-accent);
+    color: var(--color-ui-background);
+    // box-shadow: inset 0 0 0 rem(2px) var(--color-ui-accent);
   }
 
   .item-name,
