@@ -34,15 +34,27 @@ a {
   }
 }
 
-input {
+input,
+textarea,
+select {
   appearance: none;
   background: none;
   border: none;
   border-radius: 0;
+  box-shadow: none;
   font: inherit;
   margin: 0;
   outline: none;
   padding: 0;
+
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    background: inherit !important;
+    -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+    -webkit-text-fill-color: inherit !important;
+  }
 }
 
 ol,
