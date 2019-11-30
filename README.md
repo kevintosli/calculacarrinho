@@ -14,7 +14,7 @@ Em breve estarei disponibilizando — via Github Pages — a aplicação para a 
 
 | Feature                                                                                                        | Status             |
 | -------------------------------------------------------------------------------------------------------------- | ------------------ |
-| Calcular itens do seu carrinho de compras de forma fácil e simplificada, usando nomes e unidades de cada item; | Em desenvolvimento |
+| Calcular itens do seu carrinho de compras de forma fácil e simplificada, usando nomes e unidades de cada item; | Feito              |
 | Manter o carrinho de compras em `LocalStorage` para evitar perda de dados ao recarregar o app                  | Em desenvolvimento |
 | Enviar feedbacks                                                                                               | Planejado          |
 | Histórico de carrinhos de compras                                                                              | Planejado          |
