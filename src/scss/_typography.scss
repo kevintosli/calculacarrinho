@@ -42,76 +42,76 @@ $graphene-font-weight-semibold: map-get($font-weights, "semibold");
 $graphene-font-weight-bold: map-get($font-weights, "bold");
 
 // Text styles
-%__fonts_shared {
+@mixin __fonts_shared() {
   font-family: $graphene-font-family;
   font-style: normal;
 }
 
-%graphene-font-style-feature {
+@mixin graphene-font-style-feature() {
   font-size: $graphene-font-size-feature;
   font-weight: $graphene-font-weight-regular;
   font-feature-settings: "ss04" on;
   letter-spacing: -0.03em;
   line-height: rem(72px);
-  @extend %__fonts_shared;
+  @include __fonts_shared();
 }
-%graphene-font-style-supheading {
+@mixin graphene-font-style-supheading() {
   font-size: $graphene-font-size-supheading;
   font-weight: $graphene-font-weight-regular;
   font-feature-settings: "salt" on;
   letter-spacing: -0.02em;
   line-height: rem(60px);
-  @extend %__fonts_shared;
+  @include __fonts_shared();
 }
-%graphene-font-style-heading {
+@mixin graphene-font-style-heading() {
   font-size: $graphene-font-size-heading;
   font-weight: $graphene-font-weight-semibold;
   font-feature-settings: "salt" on;
   letter-spacing: -0.01em;
   line-height: rem(40px);
-  @extend %__fonts_shared;
+  @include __fonts_shared();
 }
-%graphene-font-style-subheading {
+@mixin graphene-font-style-subheading() {
   font-size: $graphene-font-size-subheading;
   font-weight: $graphene-font-weight-semibold;
   font-feature-settings: "cpsp" on;
   line-height: rem(40px);
-  @extend %__fonts_shared;
+  @include __fonts_shared();
 }
-%graphene-font-style-interest {
+@mixin graphene-font-style-interest() {
   font-size: $graphene-font-size-interest;
   font-weight: $graphene-font-weight-semibold;
   letter-spacing: -0.01em;
   line-height: rem(32px);
-  @extend %__fonts_shared;
+  @include __fonts_shared();
 }
-%graphene-font-style-paragraph {
+@mixin graphene-font-style-paragraph() {
   font-size: $graphene-font-size-paragraph;
   font-weight: $graphene-font-weight-regular;
   letter-spacing: 0.02em;
   line-height: rem(24px);
-  @extend %__fonts_shared;
+  @include __fonts_shared();
 }
-%graphene-font-style-label {
+@mixin graphene-font-style-label() {
   font-size: $graphene-font-size-label;
   font-weight: $graphene-font-weight-regular;
   letter-spacing: 0.03em;
   line-height: rem(20px);
-  @extend %__fonts_shared;
+  @include __fonts_shared();
 }
-%graphene-font-style-meta {
+@mixin graphene-font-style-meta() {
   font-size: $graphene-font-size-meta;
   font-weight: $graphene-font-weight-regular;
   font-feature-settings: "zero" on, "cpsp" on;
   letter-spacing: 0.041em;
   line-height: rem(16px);
-  @extend %__fonts_shared;
+  @include __fonts_shared();
 }
-%graphene-font-style-disclaimer {
+@mixin graphene-font-style-disclaimer() {
   font-size: $graphene-font-size-disclaimer;
   font-weight: $graphene-font-weight-semibold;
   font-feature-settings: "cpsp" on, "zero" on, "ss05" on, "salt" on;
   letter-spacing: 0.08em;
   line-height: rem(16px);
-  @extend %__fonts_shared;
+  @include __fonts_shared();
 }
