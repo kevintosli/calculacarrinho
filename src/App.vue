@@ -186,7 +186,7 @@ application {
   color: var(--color-text-heading);
   line-height: rem(24px);
   margin: 0 var(--app-view-padding);
-  margin-top: rem(8px);
+  margin-top: var(--app-view-padding);
   padding: rem(8px) rem(12px);
   @include graphene-font-style-paragraph();
 
