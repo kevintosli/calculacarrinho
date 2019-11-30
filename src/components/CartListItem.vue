@@ -1,57 +1,41 @@
 <template>
   <cartlist-item
     :class="[
-      'flex-col relative',
+      'flex-row relative',
       {
         _selected: selected
       }
     ]"
     :data-item-index="itemIndex"
-    @click="toggleItem"
+    @click="select_item"
+    ontouchstart=""
   >
-    <cartlist-item-info class="flex-row">
-      <div
-        :class="[
-          'item-name',
-          {
-            _unnamed: !name
-          }
-        ]"
-      >
-        {{ name || "Sem nome" }}
-      </div>
-      <div class="item-un">{{ units }}</div>
-      <div class="item-price">
-        {{
-          Number(price).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL"
-          })
-        }}
-      </div>
-    </cartlist-item-info>
-    <cartlist-item-controls
+    <div
       :class="[
-        'flex-row',
+        'item-name',
         {
-          _expanded: selected
+          _unnamed: !name
         }
       ]"
     >
-      <control-section></control-section>
-      <control-section>
-        <div class="grphn-icon">minus_circle</div>
-        <div class="grphn-icon">plus_circle</div>
-      </control-section>
-      <control-section>
-        <div class="grphn-icon">xmark_circle</div>
-      </control-section>
-    </cartlist-item-controls>
+      {{ name || "Sem nome" }}
+    </div>
+    <div class="item-un">{{ units }}</div>
+    <div class="item-price">
+      {{
+        Number(price).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL"
+        })
+      }}
+    </div>
     <hr class="__separator absolute pin-t" />
   </cartlist-item>
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "ListItem",
   props: {
@@ -71,8 +55,9 @@ export default {
     itemIndex: Number
   },
   methods: {
-    toggleItem() {
-      this.$emit("select", this.itemIndex);
+    ...mapActions(["cart_select", "cart_remove"]),
+    select_item() {
+      this.cart_select(this.itemIndex);
     }
   }
 };
@@ -80,8 +65,10 @@ export default {
 
 <style lang="scss">
 @import "@scss/_utils";
+@import "@scss/variables";
 
 cartlist-item {
+  border-radius: var(--ui-border-radius-regular);
   line-height: rem(44px);
   overflow: hidden;
   padding: 0 var(--app-view-padding);
@@ -91,6 +78,9 @@ cartlist-item {
       display: none;
     }
   }
+  &:hover:active {
+    background-color: var(--color-ui-listalt);
+  }
   .__separator {
     background-color: var(--color-ui-separator);
     left: var(--app-view-padding);
@@ -98,43 +88,25 @@ cartlist-item {
     right: var(--app-view-padding);
   }
   &._selected {
+    background-color: rgba($color-ui-accent-400, 0.08);
+    color: var(--color-ui-accent);
     box-shadow: inset 0 0 0 rem(2px) var(--color-ui-accent);
+
+    &:hover:active {
+      background-color: rgba($color-ui-accent-400, 0.12);
+    }
   }
 
+  .item-name,
+  .item-un,
+  .item-price {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .item-name {
     &._unnamed {
       color: var(--color-text-placeholder);
-    }
-  }
-
-  cartlist-item-controls {
-    font-size: rem(24px);
-    padding-bottom: rem(12px);
-
-    &:not(._expanded) {
-      height: 0rem;
-      padding: 0;
-      visibility: hidden;
-    }
-
-    control-section {
-      display: inline-flex;
-      flex-direction: row;
-
-      div:not(:first-child) {
-        margin-left: rem(12px);
-      }
-    }
-    control-section:nth-child(1) {
-      flex-grow: 5;
-    }
-    control-section:nth-child(2) {
-      flex-grow: 1;
-      justify-content: flex-end;
-    }
-    control-section:nth-child(3) {
-      flex-grow: 2;
-      justify-content: flex-end;
     }
   }
 }
