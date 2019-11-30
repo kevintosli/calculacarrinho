@@ -163,3 +163,12 @@ $pin-directions: (
     top: 0;
   }
 }
+
+// Text alignment
+$text-alignments: (left, right, center, justify);
+
+@each $type in $text-alignments {
+  .text-#{$type} {
+    text-align: #{$type};
+  }
+}
