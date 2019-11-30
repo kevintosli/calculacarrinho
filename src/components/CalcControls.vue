@@ -9,7 +9,7 @@
           }
         ]"
       >
-        <input class="_name-input" type="text" v-model="input_name.value" placeholder="Definir nome..." @focus="input_focus" @blur="input_blur" />
+        <input class="_name-input" type="text" name="item-name" v-model="input_name.value" placeholder="Definir nome..." @focus="input_focus" @blur="input_blur" />
       </div>
       <div class="item-un flex-shrink-0">{{ input_units.value }}</div>
       <div
@@ -227,8 +227,6 @@ export default {
   }
 
   &._editing {
-    // background-color: rgba($color-ui-accent-400, 0.08);
-    // color: var(--color-ui-accent);
     box-shadow: inset 0 rem(3px) 0 var(--color-ui-accent);
   }
 
@@ -255,6 +253,7 @@ export default {
       color: var(--color-text-placeholder);
     }
     ._name-input {
+      -webkit-box-shadow: inset 0 0 0 999px var(--color-ui-background) !important;
       color: var(--color-text-heading);
       width: 100%;
 
@@ -323,8 +322,8 @@ export default {
           transition-duration: 0ms;
         }
         &._invisible {
-          opacity: 0;
           position: absolute;
+          visibility: hidden;
         }
         &:not(._invisible) {
           animation: pulse;
@@ -332,7 +331,7 @@ export default {
           animation-iteration-count: 1;
           animation-play-state: running;
           font-size: inherit;
-          opacity: 1;
+          visibility: visible;
 
           @keyframes pulse {
             from {
