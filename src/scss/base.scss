@@ -19,6 +19,8 @@ html {
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
   user-select: none;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 body {
@@ -27,12 +29,35 @@ body {
   left: 0;
   overflow-x: hidden;
   overflow-y: hidden;
-  position: absolute;
+  position: fixed;
   right: 0;
   top: 0;
 }
 
 h1 {
   text-align: center;
-  @extend %graphene-font-style-heading;
+  @include graphene-font-style-heading();
+}
+
+::selection {
+  background: rgba($color-ui-accent-400, 0.16);
+  color: var(--color-ui-accent);
+}
+
+// Transitions
+.pop-enter,
+.pop-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+.pop-enter-to,
+.pop-leave {
+  opacity: 1;
+  transform: scale(1);
+}
+.pop-enter-active,
+.pop-leave-active {
+  transition-property: transform, opacity;
+  transition-duration: var(--transition-duration-slow);
+  transition-timing-function: var(--transition-timing-ease_out);
 }
