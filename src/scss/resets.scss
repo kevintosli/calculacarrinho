@@ -36,7 +36,13 @@ a {
 
 input {
   appearance: none;
+  background: none;
+  border: none;
+  border-radius: 0;
   font: inherit;
+  margin: 0;
+  outline: none;
+  padding: 0;
 }
 
 ol,
