@@ -1,5 +1,5 @@
 <template>
-  <cartlist class="flex-col flex-shrink-0" :key="cart_list_updates">
+  <cartlist class="flex-col flex-shrink-0 relative" :key="cart_list_updates">
     <transition-group name="pop">
       <CartListItem v-for="(item, index) in list" :name="item.name" :units="item.units" :price="item.price" :selected="item.selected" :item-index="index" :key="`${index}-${item.selected}`" />
     </transition-group>

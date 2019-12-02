@@ -68,7 +68,6 @@ export default {
 @import "@scss/variables";
 
 cartlist-item {
-  border-radius: var(--ui-border-radius-regular);
   line-height: rem(44px);
   overflow: hidden;
   padding: 0 var(--app-view-padding);
@@ -90,7 +89,16 @@ cartlist-item {
   &._selected {
     background-color: var(--color-ui-accent);
     color: var(--color-ui-background);
-    // box-shadow: inset 0 0 0 rem(2px) var(--color-ui-accent);
+
+    .item-name {
+      &._unnamed {
+        color: inherit;
+      }
+    }
+    .__separator {
+      opacity: 0;
+      visibility: hidden;
+    }
   }
 
   .item-name,
