@@ -9,7 +9,7 @@
           }
         ]"
       >
-        <input class="_name-input" type="text" name="item-name" v-model="input_name.value" placeholder="Definir nome..." @focus="input_focus" @blur="input_blur" />
+        <input class="_name-input" type="text" name="item-name" v-model="input_name.value" placeholder="Nome do item" @focus="input_focus" @blur="input_blur" />
       </div>
       <div class="item-un flex-shrink-0">{{ input_units.value }}</div>
       <div
@@ -31,7 +31,7 @@
     <div class="calc-controls" ontouchstart="">
       <!-- Interaction -->
       <div class="calc-key" style="grid-area: add;">
-        <div :class="['calc-inner-key grphn-icon __accent', { _disabled: is_initial_input_price, _invisible: editing }]" key="add" @click="add_to_list">arrow_up</div>
+        <div :class="['calc-inner-key grphn-icon __accent', { _invisible: editing }]" key="add" @click="add_to_list">arrow_up</div>
         <div :class="['calc-inner-key grphn-icon __accent', { _invisible: !editing }]" key="save" @click="update_to_list">checkmark</div>
       </div>
       <div class="calc-key" style="grid-area: plus;" @click="input_units.add(1)">
@@ -79,7 +79,7 @@
         </div>
       </div>
       <div class="calc-key" style="grid-area: erase;">
-        <div :class="['calc-inner-key grphn-icon', { _disabled: is_initial_input_price }]" @click="input_price.backspace">delete_left</div>
+        <div :class="['calc-inner-key grphn-icon']" @click="input_price.backspace">delete_left</div>
       </div>
     </div>
   </div>
@@ -101,14 +101,15 @@ export default {
         value: "0.00",
         update: key_value => {
           if (key_value == "reset") return (this.input_price.value = "0.00");
-
-          let VALUE = this.input_price.value;
-          VALUE = String(VALUE)
-            .replace(".", "") // Removing dot
-            .replace(/(\d*)/, `$1${key_value}`) // Adding pressed key to end
-            .replace(/(\d*)(\d{2})/, "$1.$2") // Adding dot again
-            .replace(/(0?)(\d+\.\d*)/, "$2"); // Removing leading zero
-          this.input_price.value = VALUE;
+          if (Number(this.input_price.value) <= 1000) {
+            let VALUE = this.input_price.value;
+            VALUE = String(VALUE)
+              .replace(".", "") // Removing dot
+              .replace(/(\d*)/, `$1${key_value}`) // Adding pressed key to end
+              .replace(/(\d*)(\d{2})/, "$1.$2") // Adding dot again
+              .replace(/(0?)(\d+\.\d*)/g, "$2"); // Removing leading zero
+            this.input_price.value = VALUE;
+          }
         },
         backspace: () => {
           if (this.input_price.value == 0) return window.console.log("Não pode apagar mais");
@@ -127,10 +128,11 @@ export default {
       input_units: {
         value: 1,
         add: quantity => {
+          if (this.input_units.value == 99) return false;
           this.input_units.value += quantity;
         },
         remove: quantity => {
-          if (this.input_units.value == 1) return window.console.log("Não pode remover mais");
+          if (this.input_units.value == 1) return false;
           if (this.input_units.value >= 1) return (this.input_units.value -= quantity);
         },
         reset: () => {
@@ -155,15 +157,23 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(["cart_add"]),
+    ...mapMutations(["cart_add", "notify"]),
     ...mapActions(["cart_update", "cart_remove"]),
     add_to_list() {
-      this.cart_add({
-        name: this.input_name.value,
-        price: this.input_price.value,
-        units: this.input_units.value
-      });
-      if (!this.is_initial_input_price) this.reset_controls();
+      if (this.is_initial_input_price) {
+        this.notify({
+          type: "alert",
+          description: "Digite um valor para adicionar à lista",
+          duration: 2000
+        });
+      } else {
+        this.cart_add({
+          name: this.input_name.value,
+          price: this.input_price.value,
+          units: this.input_units.value
+        });
+        this.reset_controls();
+      }
     },
     update_to_list() {
       const PAYLOAD = {
@@ -200,6 +210,7 @@ export default {
       this.input_name.focus = true;
     },
     input_blur() {
+      this.input_name.value.trim();
       this.input_name.focus = false;
     }
   }
@@ -214,6 +225,7 @@ export default {
 .calc-controls-wrapper {
   background-color: var(--color-ui-background);
   box-shadow: inset 0 rem(1px) 0 var(--color-ui-separator);
+  z-index: 100;
 
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
     padding-bottom: calc(var(--app-view-padding) + env(safe-area-inset-bottom));

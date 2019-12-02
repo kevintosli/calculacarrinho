@@ -5,34 +5,10 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    cart_list: [
-      {
-        name: "Leite",
-        units: 12,
-        price: "2.99",
-        selected: false
-      },
-      {
-        name: "Pão",
-        units: 3,
-        price: "4.70",
-        selected: false
-      },
-      {
-        name: "Creme dental",
-        units: 2,
-        price: "12.80",
-        selected: false
-      },
-      {
-        name: "Rosquinhas",
-        units: 5,
-        price: "0.54",
-        selected: false
-      }
-    ],
+    cart_list: JSON.parse(localStorage.getItem("cart_list")) || [],
     cart_list_selected: {},
     cart_list_updates: 0,
+    notification_list: [],
     isMobile: false,
     iOSDevice: !!/iPad|iPhone|iPod/.test(navigator.platform)
   },
@@ -40,6 +16,7 @@ export default new Vuex.Store({
     cart_list: ({ cart_list }) => cart_list,
     cart_list_selected: ({ cart_list_selected }) => cart_list_selected,
     cart_list_updates: ({ cart_list_updates }) => cart_list_updates,
+    notification_list: ({ notification_list }) => notification_list,
     isMobile: ({ isMobile }) => isMobile,
     iOSDevice: ({ iOSDevice }) => iOSDevice
   },
@@ -62,18 +39,13 @@ export default new Vuex.Store({
       }
     },
     cart_add(state, payload) {
-      if (payload.price == "0.00") {
-        window.console.warn("Digite um valor para adicionar");
-        return false;
-      } else {
-        state.cart_list.push({
-          name: payload.name || "",
-          units: payload.units || 1,
-          price: payload.price,
-          selected: false
-        });
-        return true;
-      }
+      state.cart_list.push({
+        name: payload.name || "",
+        units: payload.units || 1,
+        price: payload.price,
+        selected: false
+      });
+      localStorage.setItem("cart_list", JSON.stringify(state.cart_list));
     },
     cart_update_data(state, { index, payload }) {
       state.cart_list[index] = {
@@ -83,6 +55,23 @@ export default new Vuex.Store({
         selected: state.cart_list_selected.selected
       };
       state.cart_list_updates += 1;
+    },
+    cart_list_reset(state) {
+      state.cart_list = [];
+      localStorage.setItem("cart_list", JSON.stringify(state.cart_list));
+      state.cart_list_updates += 1;
+    },
+    notify(state, payload) {
+      clearTimeout(TIMEOUT);
+      const DATA = {
+        type: payload.type || "",
+        description: payload.description,
+        duration: payload.duration
+      };
+      state.notification_list = [DATA];
+      const TIMEOUT = setTimeout(() => {
+        state.notification_list = [];
+      }, payload.duration);
     },
     changeMobileView(state, boolean) {
       state.isMobile = boolean;
@@ -97,20 +86,27 @@ export default new Vuex.Store({
       commit("cart_set_selected", index);
       state.cart_list_updates += 1;
     },
-    cart_update({ commit }, { index, payload }) {
+    cart_update({ commit, state }, { index, payload }) {
       if (payload.price == "0.00") {
-        return window.console.log("Digite um valor para salvar");
+        commit("notify", {
+          type: "alert",
+          description: "Digite um valor para salvar",
+          duration: 3000
+        });
+      } else {
+        commit("cart_update_data", { index, payload });
+        setTimeout(() => {
+          commit("cart_unselect_all");
+          localStorage.setItem("cart_list", JSON.stringify(state.cart_list));
+        }, 1);
       }
-      commit("cart_update_data", { index, payload });
-      setTimeout(() => {
-        commit("cart_unselect_all");
-      }, 1);
     },
     cart_remove({ state, commit }, index) {
       state.cart_list.splice(index, 1);
       setTimeout(() => {
         commit("cart_unselect_all");
       }, 1);
+      localStorage.setItem("cart_list", JSON.stringify(state.cart_list));
     }
   }
 });
