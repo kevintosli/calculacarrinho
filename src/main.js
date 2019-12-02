@@ -4,7 +4,7 @@ import store from "@/store/store";
 import "@/registerServiceWorker";
 
 Vue.config.productionTip = false;
-Vue.config.ignoredElements = [/application/, /content/, /cartlist/, /control-/];
+Vue.config.ignoredElements = [/application/, /content/, /notification-/, /cartlist/, /control-/];
 
 new Vue({
   store,
