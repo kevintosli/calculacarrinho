@@ -2,6 +2,7 @@ const path = require("path");
 process.env.VUE_APP_VERSION = require("./package.json").version;
 
 module.exports = {
+  publicPath: "/calculacarrinho/",
   // pluginOptions: {
   //   "style-resources-loader": {
   //     preProcessor: "scss",
