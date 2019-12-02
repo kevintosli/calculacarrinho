@@ -35,7 +35,6 @@ body {
 }
 
 h1 {
-  text-align: center;
   @include graphene-font-style-heading();
 }
 
@@ -59,5 +58,22 @@ h1 {
 .pop-leave-active {
   transition-property: transform, opacity;
   transition-duration: var(--transition-duration-slow);
+  transition-timing-function: var(--transition-timing-ease_out);
+}
+
+.notification-enter,
+.notification-leave-to {
+  opacity: 0;
+  transform: translateY(rem(-16px));
+}
+.notification-enter-to,
+.notification-leave {
+  opacity: 1;
+  transform: translateY(0%);
+}
+.notification-enter-active,
+.notification-leave-active {
+  transition-duration: var(--transition-duration-regular);
+  transition-property: transform, opacity;
   transition-timing-function: var(--transition-timing-ease_out);
 }
