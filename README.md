@@ -12,13 +12,13 @@ Este é um projeto pessoal de [Kevin Tosli](http://bit.ly/tosli-github) que agre
 
 Em breve estarei disponibilizando — via Github Pages — a aplicação para a utilização de todos com as seguintes _features_:
 
-| Feature                                                                                                        | Status             |
-| -------------------------------------------------------------------------------------------------------------- | ------------------ |
-| Calcular itens do seu carrinho de compras de forma fácil e simplificada, usando nomes e unidades de cada item; | Feito              |
-| Manter o carrinho de compras em `LocalStorage` para evitar perda de dados ao recarregar o app                  | Em desenvolvimento |
-| Enviar feedbacks                                                                                               | Planejado          |
-| Histórico de carrinhos de compras                                                                              | Planejado          |
-| Relatório de compras                                                                                           | Em análise         |
+| Feature                                                                                                        | Status     |
+| -------------------------------------------------------------------------------------------------------------- | ---------- |
+| Calcular itens do seu carrinho de compras de forma fácil e simplificada, usando nomes e unidades de cada item; | Feito      |
+| Manter o carrinho de compras em `LocalStorage` para evitar perda de dados ao recarregar o app                  | Feito      |
+| Enviar feedbacks                                                                                               | Planejado  |
+| Histórico de carrinhos de compras                                                                              | Planejado  |
+| Relatório de compras                                                                                           | Em análise |
 
 ---
 
