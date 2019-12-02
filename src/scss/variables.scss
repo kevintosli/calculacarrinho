@@ -15,6 +15,7 @@ html {
   --color-ui-background: #{$graphene-color-white-200};
   --color-ui-separator: #{$graphene-color-black-200};
   --color-ui-listalt: hsla(0, 0%, 0%, 0.03);
+  --color-ui-notification: #{$graphene-color-gray-500};
 
   --transition-duration-fast: 80ms;
   --transition-duration-regular: 380ms;
@@ -30,5 +31,6 @@ html {
     --color-ui-background: #{$graphene-color-black-700};
     --color-ui-separator: #{$graphene-color-white-600};
     --color-ui-listalt: hsla(0, 0%, 100%, 0.05);
+    --color-ui-notification: #{$graphene-color-gray-400};
   }
 }
