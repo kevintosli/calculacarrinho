@@ -13,8 +13,8 @@
       <content class="flex-col flex-grow-1 flex-shrink-1 relative">
         <template v-if="cart_list.length">
           <div class="heading">
-            <h1 class="_label">Carrinho</h1>
-            <div class="_icon grphn-icon">questionmark_circle</div>
+            <h1 class="_label text-center">Carrinho</h1>
+            <!-- <div class="_icon grphn-icon">questionmark_circle</div> -->
           </div>
 
           <div class="list-header flex-row flex-shrink-0">
