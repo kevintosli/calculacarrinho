@@ -9,7 +9,15 @@
           }
         ]"
       >
-        <input class="_name-input" type="text" name="item-name" v-model="input_name.value" placeholder="Nome do item" @focus="input_focus" @blur="input_blur" />
+        <input
+          class="_name-input"
+          type="text"
+          name="item-name"
+          v-model="input_name.value"
+          placeholder="Nome do item"
+          @focus="input_focus"
+          @blur="input_blur"
+        />
       </div>
       <div class="item-un flex-shrink-0">{{ input_units.value }}</div>
       <div
@@ -31,18 +39,58 @@
     <div class="calc-controls" ontouchstart="">
       <!-- Interaction -->
       <div class="calc-key" style="grid-area: add;">
-        <div :class="['calc-inner-key grphn-icon __accent', { _invisible: editing }]" key="add" @click="add_to_list">arrow_up</div>
-        <div :class="['calc-inner-key grphn-icon __accent', { _invisible: !editing }]" key="save" @click="update_to_list">checkmark</div>
+        <div
+          :class="[
+            'calc-inner-key grphn-icon __accent',
+            { _invisible: editing }
+          ]"
+          key="add"
+          @click="add_to_list"
+        >
+          arrow_up
+        </div>
+        <div
+          :class="[
+            'calc-inner-key grphn-icon __accent',
+            { _invisible: !editing }
+          ]"
+          key="save"
+          @click="update_to_list"
+        >
+          checkmark
+        </div>
       </div>
-      <div class="calc-key" style="grid-area: plus;" @click="input_units.add(1)">
+      <div
+        class="calc-key"
+        style="grid-area: plus;"
+        @click="input_units.add(1)"
+      >
         <div class="calc-inner-key grphn-icon __accent">plus</div>
       </div>
-      <div class="calc-key" style="grid-area: minus;" @click="input_units.remove(1)">
+      <div
+        class="calc-key"
+        style="grid-area: minus;"
+        @click="input_units.remove(1)"
+      >
         <div class="calc-inner-key grphn-icon __accent">minus</div>
       </div>
       <div class="calc-key" style="grid-area: reset;">
-        <div v-if="!editing" class="calc-inner-key __accent" @click="reset_controls">{{ is_initial_input_price && this.input_units.value == 1 ? "AC" : "C" }}</div>
-        <div v-else class="calc-inner-key grphn-icon __accent" @click="remove_from_list">trashcan</div>
+        <div
+          v-if="!editing"
+          class="calc-inner-key __accent"
+          @click="reset_controls"
+        >
+          {{
+            is_initial_input_price && this.input_units.value == 1 ? "AC" : "C"
+          }}
+        </div>
+        <div
+          v-else
+          class="calc-inner-key grphn-icon __accent"
+          @click="remove_from_list"
+        >
+          trashcan
+        </div>
       </div>
       <!-- Numbers -->
       <div class="calc-key" style="grid-area: r3c1;">
@@ -79,7 +127,12 @@
         </div>
       </div>
       <div class="calc-key" style="grid-area: erase;">
-        <div :class="['calc-inner-key grphn-icon']" @click="input_price.backspace">delete_left</div>
+        <div
+          :class="['calc-inner-key grphn-icon']"
+          @click="input_price.backspace"
+        >
+          delete_left
+        </div>
       </div>
     </div>
   </div>
@@ -112,7 +165,8 @@ export default {
           }
         },
         backspace: () => {
-          if (this.input_price.value == 0) return window.console.log("Não pode apagar mais");
+          if (this.input_price.value == 0)
+            return window.console.log("Não pode apagar mais");
 
           let VALUE = this.input_price.value;
           VALUE = String(VALUE)
@@ -133,7 +187,8 @@ export default {
         },
         remove: quantity => {
           if (this.input_units.value == 1) return false;
-          if (this.input_units.value >= 1) return (this.input_units.value -= quantity);
+          if (this.input_units.value >= 1)
+            return (this.input_units.value -= quantity);
         },
         reset: () => {
           this.input_units.value = 1;

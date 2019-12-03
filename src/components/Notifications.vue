@@ -1,12 +1,22 @@
 <template>
   <notification-list class="fixed flex-col pin-x">
     <transition-group name="notification">
-      <notification-block-wrapper class="flex-row justify-center" v-for="(notification, index) in notification_list" :key="index">
+      <notification-block-wrapper
+        class="flex-row justify-center"
+        v-for="notification in notification_list"
+        :key="notification.description.replace(/\s/g, '-')"
+      >
         <notification-block class="inline-flex flex-row">
           <div class="_description">
-            <font v-if="notification.type == 'info'" class="_icon grphn-icon">infomark_circle</font>
-            <font v-if="notification.type == 'alert'" class="_icon grphn-icon">exclamationmark_octagon</font>
-            <font v-if="notification.type == 'success'" class="_icon grphn-icon">checkmark_circle</font>
+            <span v-if="notification.type == 'info'" class="_icon grphn-icon"
+              >infomark_circle</span
+            >
+            <span v-if="notification.type == 'alert'" class="_icon grphn-icon"
+              >exclamationmark_octagon</span
+            >
+            <span v-if="notification.type == 'success'" class="_icon grphn-icon"
+              >checkmark_circle</span
+            >
             {{ notification.description }}
           </div>
         </notification-block>
