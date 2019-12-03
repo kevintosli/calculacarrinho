@@ -1,7 +1,7 @@
 {
   "name": "Calcula Carrinho",
   "short_name": "Calcula Carrinho",
-  "start_url": "/",
+  "start_url": "/calculacarrinho/",
   "display": "standalone",
   "background_color": "#81bb35",
   "theme_color": "#81bb35",
