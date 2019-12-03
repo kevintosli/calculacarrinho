@@ -3,8 +3,12 @@
     <template v-if="!isMobile">
       <div class="_viewport_desktop flex-col align-items-center justify-center text-center absolute pin-a">
         <QRCode class="qr_code" :value="qr_desktop_address" :options="qr_desktop_options" />
-        <div class="message">Escaneie o código com a câmera do seu celular para acessar o aplicativo.</div>
-        <div class="submessage">Este aplicativo foi desenvolvido para funcionar apenas em smartphones.</div>
+        <div class="message">
+          Escaneie o código com a câmera do seu celular para acessar o aplicativo.
+        </div>
+        <div class="submessage">
+          Este aplicativo foi desenvolvido para funcionar apenas em smartphones.
+        </div>
       </div>
     </template>
     <template v-else>
@@ -249,16 +253,6 @@ cartlist-controls {
     padding: 0 var(--padding-x);
     position: relative;
 
-    // &:before {
-    //   background-color: var(--color-ui-background);
-    //   content: "";
-    //   display: block;
-    //   height: rem(2px);
-    //   left: 0;
-    //   position: absolute;
-    //   right: 0;
-    //   top: 0;
-    // }
     &:hover:active {
       color: var(--color-text-heading);
     }
@@ -283,16 +277,18 @@ cartlist-controls {
   }
   .submessage,
   .message {
-    max-width: rem(400px);
+    max-width: rem(420px);
   }
   .message {
     @include graphene-font-style-interest();
   }
   .submessage {
+    background-color: var(--color-ui-listalt);
+    border-radius: var(--ui-border-radius-regular);
     color: var(--color-text-placeholder);
-    border-top: rem(1px) solid var(--color-ui-separator);
-    margin-top: rem(8px);
-    padding-top: rem(8px);
+    // border-top: rem(1px) solid var(--color-ui-separator);
+    margin-top: rem(24px);
+    padding: rem(8px) rem(16px);
     @include graphene-font-style-label();
   }
 }
