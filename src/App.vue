@@ -1,10 +1,17 @@
 <template>
   <application class="absolute pin-a flex-col" @click.prevent="no_zoom">
     <template v-if="!isMobile">
-      <div class="_viewport_desktop flex-col align-items-center justify-center text-center absolute pin-a">
-        <QRCode class="qr_code" :value="qr_desktop_address" :options="qr_desktop_options" />
+      <div
+        class="_viewport_desktop flex-col align-items-center justify-center text-center absolute pin-a"
+      >
+        <QRCode
+          class="qr_code"
+          :value="qr_desktop_address"
+          :options="qr_desktop_options"
+        />
         <div class="message">
-          Escaneie o código com a câmera do seu celular para acessar o aplicativo.
+          Escaneie o código com a câmera do seu celular para acessar o
+          aplicativo.
         </div>
         <div class="submessage">
           Este aplicativo foi desenvolvido para funcionar apenas em smartphones.
@@ -30,7 +37,11 @@
 
           <CartList :list="cart_list" />
 
-          <cartlist-footer class="flex-col flex-shrink-0" :key="`${cart_list_updates}-${calc_list_total()}`" ontouchstart="">
+          <cartlist-footer
+            class="flex-col flex-shrink-0"
+            :key="`${cart_list_updates}-${calc_list_total()}`"
+            ontouchstart=""
+          >
             <cartlist-footer-item class="flex-row">
               <div class="__label">Itens no carrinho</div>
               <div class="__value">{{ calc_list_units() }}un</div>
@@ -49,8 +60,11 @@
         </template>
 
         <template v-else>
-          <div class="cart-empty flex-col flex-grow-1 align-items-center justify-center text-center">
-            Seu carrinho de compras está vazio. Digite um valor, defina a quantidade e o nome do item é opcional.
+          <div
+            class="cart-empty flex-col flex-grow-1 align-items-center justify-center text-center"
+          >
+            Seu carrinho de compras está vazio. Digite um valor, defina a
+            quantidade e o nome do item é opcional.
           </div>
         </template>
       </content>
@@ -283,7 +297,7 @@ cartlist-controls {
     @include graphene-font-style-interest();
   }
   .submessage {
-    background-color: var(--color-ui-listalt);
+    background-color: var(--color-ui-separator);
     border-radius: var(--ui-border-radius-regular);
     color: var(--color-text-placeholder);
     // border-top: rem(1px) solid var(--color-ui-separator);
