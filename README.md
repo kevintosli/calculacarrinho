@@ -4,7 +4,7 @@
 
 Chega de surpresas no caixa do supermercado. Conheça a calculadora de carrinho de compras e saiba sempre exatamente quanto vai pagar.
 
-[Abrir o aplicativo](https://kevintosli.github.io/calculacarrinho/)
+[Conheça o aplicativo](https://kevintosli.github.io/calculacarrinho/)
 
 ---
 
@@ -18,11 +18,11 @@ Confira na tabela abaixo a lista de _features_ que estão feitas, em desenvolvim
 
 | Feature                                                                                                        | Status             |
 | -------------------------------------------------------------------------------------------------------------- | ------------------ |
-| Calcular itens do seu carrinho de compras de forma fácil e simplificada, usando nomes e unidades de cada item; | Feito              |
-| Manter o carrinho de compras em `LocalStorage` para evitar perda de dados ao recarregar o app                  | Feito              |
-| Nova interface e experiência de usuário melhorada                                                              | Em desenvolvimento |
-| Enviar feedbacks                                                                                               | Previsto           |
-| Histórico de carrinhos de compras                                                                              | Previsto           |
+| Calcular itens do seu carrinho de compras de forma fácil e simplificada, usando nomes e unidades de cada item; | Feita              |
+| Manter o carrinho de compras em `LocalStorage` para evitar perda de dados ao recarregar o app                  | Feita              |
+| Nova interface (para versão 1.0) e experiência de usuário aprimorada                                           | Em desenvolvimento |
+| Enviar feedbacks                                                                                               | Prevista           |
+| Histórico de carrinhos de compras                                                                              | Prevista           |
 | Relatório de compras                                                                                           | Em análise         |
 
 ---
