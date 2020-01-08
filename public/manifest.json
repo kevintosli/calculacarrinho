@@ -3,9 +3,9 @@
   "short_name": "Calcula Carrinho",
   "start_url": "/calculacarrinho/",
   "display": "standalone",
-  "background_color": "#81bb35",
-  "theme_color": "#81bb35",
-  "description": "Saiba exatamente quanto vai pagar no caixa",
+  "background_color": "#2dae4b",
+  "theme_color": "#2dae4b",
+  "description": "Saiba exatamente quanto vai pagar no caixa do supermercado",
   "orientation": "portrait",
   "icons": [
     {
