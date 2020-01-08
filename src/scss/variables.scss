@@ -1,6 +1,8 @@
 @import "colors";
 $color-ui-accent-300: $graphene-color-green-300;
 $color-ui-accent-400: $graphene-color-green-400;
+$color-ui-delete-300: $graphene-color-orange-300;
+$color-ui-delete-400: $graphene-color-orange-400;
 
 // SCSS and CSS Variables
 html {
@@ -11,10 +13,11 @@ html {
   --color-text-paragraph: #{$graphene-color-black-600};
   --color-text-placeholder: #{$graphene-color-black-400};
   --color-ui-accent: #{$color-ui-accent-400};
-  --color-ui-delete: #{$graphene-color-redish-400};
+  --color-ui-delete: #{$graphene-color-orange-400};
   --color-ui-background: #{$graphene-color-white-200};
   --color-ui-separator: #{$graphene-color-black-200};
   --color-ui-listalt: hsla(0, 0%, 0%, 0.03);
+  --color-ui-overlay: #{$graphene-color-black-300};
   --color-ui-notification: #{$graphene-color-gray-500};
 
   --transition-duration-fast: 80ms;
@@ -27,7 +30,7 @@ html {
     --color-text-paragraph: #{$graphene-color-white-200};
     --color-text-placeholder: #{$graphene-color-white-400};
     --color-ui-accent: #{$color-ui-accent-300};
-    --color-ui-delete: #{$graphene-color-redish-300};
+    --color-ui-delete: #{$graphene-color-orange-300};
     --color-ui-background: #{$graphene-color-black-700};
     --color-ui-separator: #{$graphene-color-white-600};
     --color-ui-listalt: hsla(0, 0%, 100%, 0.05);
