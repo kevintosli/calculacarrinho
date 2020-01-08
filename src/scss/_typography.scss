@@ -115,3 +115,31 @@ $graphene-font-weight-bold: map-get($font-weights, "bold");
   line-height: rem(16px);
   @include __fonts_shared();
 }
+
+.graphene-font-style-feature {
+  @include graphene-font-style-feature();
+}
+.graphene-font-style-supheading {
+  @include graphene-font-style-supheading();
+}
+.graphene-font-style-heading {
+  @include graphene-font-style-heading();
+}
+.graphene-font-style-subheading {
+  @include graphene-font-style-subheading();
+}
+.graphene-font-style-interest {
+  @include graphene-font-style-interest();
+}
+.graphene-font-style-paragraph {
+  @include graphene-font-style-paragraph();
+}
+.graphene-font-style-label {
+  @include graphene-font-style-label();
+}
+.graphene-font-style-meta {
+  @include graphene-font-style-meta();
+}
+.graphene-font-style-disclaimer {
+  @include graphene-font-style-disclaimer();
+}
