@@ -21,6 +21,15 @@
     <template v-else>
       <Notifications />
 
+      <Overlay mode="drawer" position="bottom">
+        <p class="graphene-font-style-paragraph">
+          Quer mesmo limpar o carrinho?
+        </p>
+        <p class="graphene-font-style-label">
+          Esta ação não poderá ser desfeita.
+        </p>
+      </Overlay>
+
       <content class="flex-col flex-grow-1 flex-shrink-1 relative">
         <template v-if="cart_list.length">
           <div class="heading">
@@ -51,7 +60,7 @@
               <div class="__value">{{ calc_list_total() }}</div>
             </cartlist-footer-item>
             <cartlist-controls class="flex-col">
-              <cartlist-control @click="cart_list_reset">
+              <cartlist-control class="_delete" @click="cart_list_reset">
                 <div class="__label">Limpar carrinho</div>
                 <div class="__icon grphn-icon">trashcan</div>
               </cartlist-control>
@@ -84,6 +93,7 @@ export default {
     CartList: () => import("@components/CartList"),
     CalcControls: () => import("@components/CalcControls"),
     Notifications: () => import("@components/Notifications"),
+    Overlay: () => import("@components/Overlay"),
     QRCode
   },
   watch: {
@@ -257,7 +267,7 @@ cartlist-controls {
     @include graphene-font-style-label;
     align-items: center;
     border-top: rem(1.6px) solid var(--color-ui-background);
-    color: var(--color-text-placeholder);
+    color: var(--color-text-paragraph);
     display: flex;
     flex-direction: row;
     font-weight: $graphene-font-weight-semibold;
@@ -269,6 +279,15 @@ cartlist-controls {
 
     &:hover:active {
       color: var(--color-text-heading);
+    }
+    &._delete {
+      background-color: rgba($color-ui-delete-400, 0.2);
+      color: var(--color-ui-delete);
+
+      &:hover:active {
+        background-color: var(--color-ui-delete);
+        color: var(--color-ui-background);
+      }
     }
     .__label {
       flex-grow: 1;
