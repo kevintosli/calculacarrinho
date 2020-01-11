@@ -86,7 +86,7 @@
         </div>
         <div
           v-else
-          class="calc-inner-key grphn-icon __accent"
+          class="calc-inner-key grphn-icon __delete"
           @click="remove_from_list"
         >
           trashcan
