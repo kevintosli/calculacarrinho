@@ -1,5 +1,10 @@
 <template>
-  <application class="absolute pin-a flex-col" @click.prevent="no_zoom">
+  <application
+    class="absolute pin-a flex-col"
+    @click.prevent="no_zoom"
+    ontouchstart=""
+  >
+    <!-- Desktop -->
     <template v-if="!isMobile">
       <div
         class="_viewport_desktop flex-col align-items-center justify-center text-center absolute pin-a"
@@ -18,17 +23,42 @@
         </div>
       </div>
     </template>
+
+    <!-- Mobile -->
     <template v-else>
       <Notifications />
 
-      <Overlay mode="drawer" position="bottom">
-        <p class="graphene-font-style-paragraph">
-          Quer mesmo limpar o carrinho?
-        </p>
-        <p class="graphene-font-style-label">
-          Esta ação não poderá ser desfeita.
-        </p>
-      </Overlay>
+      <transition name="fade">
+        <Overlay
+          mode="window"
+          position="bottom"
+          v-if="overlay_clearshoppingcart"
+          @close="overlay_clearshoppingcart = false"
+        >
+          <p class="graphene-font-style-paragraph">
+            Quer mesmo limpar o carrinho?
+          </p>
+          <p class="graphene-font-style-label">
+            Esta ação não poderá ser desfeita.
+          </p>
+          <div class="actions">
+            <input
+              type="button"
+              value="Agora não"
+              class="reject"
+              @click="overlay_clearshoppingcart = false"
+              @mouseleave.prevent="false"
+            />
+            <input
+              type="button"
+              value="Limpar o carrinho"
+              class="accept"
+              @click="clear_shoppingcart"
+              @mouseleave.prevent="false"
+            />
+          </div>
+        </Overlay>
+      </transition>
 
       <content class="flex-col flex-grow-1 flex-shrink-1 relative">
         <template v-if="cart_list.length">
@@ -60,8 +90,13 @@
               <div class="__value">{{ calc_list_total() }}</div>
             </cartlist-footer-item>
             <cartlist-controls class="flex-col">
-              <cartlist-control class="_delete" @click="cart_list_reset">
-                <div class="__label">Limpar carrinho</div>
+              <cartlist-control
+                class="_delete"
+                role="button"
+                @click="overlay_clearshoppingcart = true"
+                @mouseleave.prevent="false"
+              >
+                <div class="__label">Remover todos os itens</div>
                 <div class="__icon grphn-icon">trashcan</div>
               </cartlist-control>
             </cartlist-controls>
@@ -95,6 +130,11 @@ export default {
     Notifications: () => import("@components/Notifications"),
     Overlay: () => import("@components/Overlay"),
     QRCode
+  },
+  data() {
+    return {
+      overlay_clearshoppingcart: false
+    };
   },
   watch: {
     cart_list_updates() {
@@ -136,6 +176,10 @@ export default {
         style: "currency",
         currency: "BRL"
       });
+    },
+    clear_shoppingcart() {
+      this.cart_list_reset();
+      this.overlay_clearshoppingcart = false;
     },
     no_zoom() {
       return false;

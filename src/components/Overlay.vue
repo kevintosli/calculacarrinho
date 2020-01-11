@@ -3,7 +3,8 @@
     :class="[
       'flex fixed pin-a',
       {
-        'flex-col justify-center': mode === 'window',
+        _mounted: mounted,
+        'flex-col justify-center _window': mode === 'window',
         'flex-col justify-center _center':
           mode === 'drawer' && position === 'center',
         'flex-col justify-start _top': mode === 'drawer' && position === 'top',
@@ -32,7 +33,7 @@ export default {
     },
     position: {
       type: String,
-      default: "bottom",
+      default: "",
       validator: value => {
         return value.match(/center|top|right|bottom|left/);
       }
@@ -45,18 +46,30 @@ export default {
       }
     }
   },
+  data() {
+    return {
+      mounted: false
+    };
+  },
   methods: {
     close() {
       if (this.cancelable) {
-        window.console.log("Close overlay");
+        this.$emit("close");
       }
     }
+  },
+  mounted() {
+    this.mounted = true;
+  },
+  beforeDestroy() {
+    this.mounted = false;
   }
 };
 </script>
 
 <style lang="scss">
 @import "@scss/_utils";
+@import "@scss/_typography";
 @import "@scss/variables";
 
 application-overlay {
@@ -74,10 +87,68 @@ application-overlay {
     z-index: -1;
   }
 
+  &:not(._mounted) {
+    application-window,
+    application-drawer {
+      animation: anim_leave running;
+      animation-duration: var(--transition-duration-regular);
+      animation-iteration-count: 1;
+      visibility: hidden;
+    }
+  }
+  &._mounted {
+    application-window,
+    application-drawer {
+      animation: anim_enter running;
+      animation-duration: var(--transition-duration-regular);
+      animation-timing-function: var(--transition-timing-ease_out);
+      animation-iteration-count: 1;
+      visibility: visible;
+    }
+  }
+
   application-window,
   application-drawer {
     background: var(--color-ui-background);
     padding: var(--app-view-padding);
+
+    .actions {
+      border-top: rem(1px) solid var(--color-ui-separator);
+      display: flex;
+      flex-direction: row;
+      margin: {
+        bottom: calc(var(--app-view-padding) * -1);
+        left: calc(var(--app-view-padding) * -1);
+        right: calc(var(--app-view-padding) * -1);
+        top: rem(16px);
+      }
+      padding: 0 var(--app-view-padding);
+
+      input[type="button"],
+      button {
+        @include graphene-font-style-label();
+        flex-shrink: 1;
+        font-weight: $graphene-font-weight-semibold;
+        height: rem(48px);
+        transition-property: opacity;
+        transition-duration: var(--transition-duration-regular);
+        width: 100%;
+        white-space: nowrap;
+
+        &.accept {
+          color: var(--color-ui-accent);
+          text-align: right;
+        }
+        &.reject {
+          color: var(--color-ui-delete);
+          text-align: left;
+        }
+        &:hover:active {
+          opacity: 0.4;
+          transition-duration: 0;
+        }
+      }
+    }
   }
   application-window {
     border-radius: var(--ui-border-radius-regular);
@@ -87,6 +158,24 @@ application-overlay {
   }
   application-drawer {
     box-shadow: 0 0 rem(20px) rem(6px) $graphene-color-black-200;
+  }
+  &._window {
+    @keyframes anim_enter {
+      from {
+        transform: scale(1.1);
+      }
+      to {
+        transform: translateY(1);
+      }
+    }
+    @keyframes anim_leave {
+      from {
+        transform: translateY(1);
+      }
+      to {
+        transform: translateY(1.1);
+      }
+    }
   }
   &._top {
     application-drawer {
@@ -112,6 +201,22 @@ application-overlay {
     }
   }
   &._bottom {
+    @keyframes anim_enter {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0%);
+      }
+    }
+    @keyframes anim_leave {
+      from {
+        transform: translateY(0%);
+      }
+      to {
+        transform: translateY(100%);
+      }
+    }
     application-drawer {
       border-top-left-radius: var(--ui-border-radius-regular);
       border-top-right-radius: var(--ui-border-radius-regular);
