@@ -44,6 +44,20 @@ h1 {
 }
 
 // Transitions
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-to,
+.fade-leave {
+  opacity: 1;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition-property: opacity;
+  transition-duration: var(--transition-duration-regular);
+  // transition-timing-function: var(--transition-timing-ease_in);
+}
 .pop-enter,
 .pop-leave-to {
   opacity: 0;
