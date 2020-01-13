@@ -30,10 +30,10 @@
 
       <transition name="fade">
         <Overlay
-          mode="window"
-          position="bottom"
           v-if="overlay_clearshoppingcart"
-          @close="overlay_clearshoppingcart = false"
+          accept-label="Limpar o carrinho"
+          @reject="overlay_clearshoppingcart = false"
+          @accept="clear_shoppingcart"
         >
           <p class="graphene-font-style-paragraph">
             Quer mesmo limpar o carrinho?
@@ -41,22 +41,6 @@
           <p class="graphene-font-style-label">
             Esta ação não poderá ser desfeita.
           </p>
-          <div class="actions">
-            <input
-              type="button"
-              value="Agora não"
-              class="reject"
-              @click="overlay_clearshoppingcart = false"
-              @mouseleave.prevent="false"
-            />
-            <input
-              type="button"
-              value="Limpar o carrinho"
-              class="accept"
-              @click="clear_shoppingcart"
-              @mouseleave.prevent="false"
-            />
-          </div>
         </Overlay>
       </transition>
 
@@ -94,7 +78,7 @@
                 class="_delete"
                 role="button"
                 @click="overlay_clearshoppingcart = true"
-                @mouseleave.prevent="false"
+                @mouseleave.prevent="no_return"
               >
                 <div class="__label">Remover todos os itens</div>
                 <div class="__icon grphn-icon">trashcan</div>
@@ -184,11 +168,15 @@ export default {
     no_zoom() {
       return false;
     },
+    no_return() {
+      return false;
+    },
     handleResize() {
       this.changeMobileView(window.innerWidth <= 425);
     }
   },
   created() {
+    document.title = "Carregando...";
     this.handleResize();
     if (this.iOSDevice) {
       document.querySelector("body").classList.add("iOS");
