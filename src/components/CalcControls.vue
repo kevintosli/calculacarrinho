@@ -381,7 +381,7 @@ export default {
         top: 0;
         transform: translate3d(0, 0, 0);
         transition-property: background-color;
-        transition-duration: var(--transition-duration-regular);
+        transition-duration: var(--motion-duration-regular);
         transition-timing-function: linear;
 
         &:not(._disabled):hover:active {
@@ -394,7 +394,7 @@ export default {
         }
         &:not(._invisible) {
           animation: pulse;
-          animation-duration: var(--transition-duration-regular);
+          animation-duration: var(--motion-duration-regular);
           animation-iteration-count: 1;
           animation-play-state: running;
           font-size: inherit;
