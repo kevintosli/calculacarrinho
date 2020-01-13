@@ -2,6 +2,7 @@
 @import "colors";
 @import "typography";
 @import "icons";
+@import "motion";
 @import "variables";
 
 :root {
@@ -41,53 +42,4 @@ h1 {
 ::selection {
   background: rgba($color-ui-accent-400, 0.16);
   color: var(--color-ui-accent);
-}
-
-// Transitions
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-.fade-enter-to,
-.fade-leave {
-  opacity: 1;
-}
-.fade-enter-active,
-.fade-leave-active {
-  transition-property: opacity;
-  transition-duration: var(--transition-duration-regular);
-  // transition-timing-function: var(--transition-timing-ease_in);
-}
-.pop-enter,
-.pop-leave-to {
-  opacity: 0;
-  transform: scale(0.9);
-}
-.pop-enter-to,
-.pop-leave {
-  opacity: 1;
-  transform: scale(1);
-}
-.pop-enter-active,
-.pop-leave-active {
-  transition-property: transform, opacity;
-  transition-duration: var(--transition-duration-slow);
-  transition-timing-function: var(--transition-timing-ease_out);
-}
-
-.notification-enter,
-.notification-leave-to {
-  opacity: 0;
-  transform: translateY(rem(-16px));
-}
-.notification-enter-to,
-.notification-leave {
-  opacity: 1;
-  transform: translateY(0%);
-}
-.notification-enter-active,
-.notification-leave-active {
-  transition-duration: var(--transition-duration-regular);
-  transition-property: transform, opacity;
-  transition-timing-function: var(--transition-timing-ease_out);
 }
