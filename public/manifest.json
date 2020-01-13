@@ -5,7 +5,7 @@
   "display": "standalone",
   "background_color": "#2dae4b",
   "theme_color": "#2dae4b",
-  "description": "Saiba exatamente quanto vai pagar no caixa do supermercado",
+  "description": "Chega de surpresas no caixa do supermercado. Conheça a calculadora de carrinho de compras.",
   "orientation": "portrait",
   "icons": [
     {
