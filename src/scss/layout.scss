@@ -3,6 +3,7 @@
 // Layout tokens and styles
 
 @import "breakpoints";
+@import "typography";
 
 // Display
 $display_types: (
@@ -170,5 +171,21 @@ $text-alignments: (left, right, center, justify);
 @each $type in $text-alignments {
   .text-#{$type} {
     text-align: #{$type};
+  }
+}
+
+// Text transforms
+$text-transforms: (uppercase, lowercase, capitalize);
+
+@each $type in $text-transforms {
+  .text-#{$type} {
+    text-transform: #{$type};
+  }
+}
+
+// Font weights
+@each $weight, $value in $font-weights {
+  .text-#{$weight} {
+    font-weight: #{$value};
   }
 }
