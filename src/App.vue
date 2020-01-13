@@ -1,22 +1,11 @@
 <template>
-  <application
-    class="absolute pin-a flex-col"
-    @click.prevent="no_zoom"
-    ontouchstart=""
-  >
+  <application class="absolute pin-a flex-col" @click.prevent="no_zoom" ontouchstart="" :version="app_version">
     <!-- Desktop -->
     <template v-if="!isMobile">
-      <div
-        class="_viewport_desktop flex-col align-items-center justify-center text-center absolute pin-a"
-      >
-        <QRCode
-          class="qr_code"
-          :value="qr_desktop_address"
-          :options="qr_desktop_options"
-        />
+      <div class="_viewport_desktop flex-col align-items-center justify-center text-center absolute pin-a">
+        <QRCode class="qr_code" :value="qr_desktop_address" :options="qr_desktop_options" />
         <div class="message">
-          Escaneie o código com a câmera do seu celular para acessar o
-          aplicativo.
+          Escaneie o código com a câmera do seu celular para acessar o aplicativo.
         </div>
         <div class="submessage">
           Este aplicativo foi desenvolvido para funcionar apenas em smartphones.
@@ -29,12 +18,7 @@
       <Notifications />
 
       <transition name="fade">
-        <Overlay
-          v-if="overlay_clearshoppingcart"
-          accept-label="Limpar o carrinho"
-          @reject="overlay_clearshoppingcart = false"
-          @accept="clear_shoppingcart"
-        >
+        <Overlay v-if="overlay_clearshoppingcart" accept-label="Limpar o carrinho" @reject="overlay_clearshoppingcart = false" @accept="clear_shoppingcart">
           <p class="graphene-font-style-paragraph">
             Quer mesmo limpar o carrinho?
           </p>
@@ -60,11 +44,7 @@
 
           <CartList :list="cart_list" />
 
-          <cartlist-footer
-            class="flex-col flex-shrink-0"
-            :key="`${cart_list_updates}-${calc_list_total()}`"
-            ontouchstart=""
-          >
+          <cartlist-footer class="flex-col flex-shrink-0" :key="`${cart_list_updates}-${calc_list_total()}`" ontouchstart="">
             <cartlist-footer-item class="flex-row">
               <div class="__label">Itens no carrinho</div>
               <div class="__value">{{ calc_list_units() }}un</div>
@@ -74,12 +54,7 @@
               <div class="__value">{{ calc_list_total() }}</div>
             </cartlist-footer-item>
             <cartlist-controls class="flex-col">
-              <cartlist-control
-                class="_delete"
-                role="button"
-                @click="overlay_clearshoppingcart = true"
-                @mouseleave.prevent="no_return"
-              >
+              <cartlist-control class="_delete" role="button" @click="overlay_clearshoppingcart = true" @mouseleave.prevent="no_return">
                 <div class="__label">Remover todos os itens</div>
                 <div class="__icon grphn-icon">trashcan</div>
               </cartlist-control>
@@ -88,11 +63,8 @@
         </template>
 
         <template v-else>
-          <div
-            class="cart-empty flex-col flex-grow-1 align-items-center justify-center text-center"
-          >
-            Seu carrinho de compras está vazio. Digite um valor, defina a
-            quantidade e o nome do item é opcional.
+          <div class="cart-empty flex-col flex-grow-1 align-items-center justify-center text-center">
+            Seu carrinho de compras está vazio. Digite um valor, defina a quantidade e o nome do item é opcional.
           </div>
         </template>
       </content>
@@ -139,6 +111,9 @@ export default {
     },
     qr_desktop_address() {
       return window.location.href;
+    },
+    app_version() {
+      return process.env.VUE_APP_VERSION;
     }
   },
   methods: {
