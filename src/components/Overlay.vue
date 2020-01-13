@@ -5,19 +5,33 @@
       {
         _mounted: mounted,
         'flex-col justify-center _window': mode === 'window',
-        'flex-col justify-center _center':
-          mode === 'drawer' && position === 'center',
-        'flex-col justify-start _top': mode === 'drawer' && position === 'top',
-        'flex-row justify-end _right':
-          mode === 'drawer' && position === 'right',
-        'flex-col justify-end _bottom':
-          mode === 'drawer' && position === 'bottom',
-        'flex-row justify-start _left': mode === 'drawer' && position === 'left'
+        'flex-col justify-center _center': mode === 'drawer-center',
+        'flex-col justify-start _top': mode === 'drawer-top',
+        'flex-row justify-end _right': mode === 'drawer-right',
+        'flex-col justify-end _bottom': mode === 'drawer-bottom',
+        'flex-row justify-start _left': mode === 'drawer-left'
       }
     ]"
+    tabindex="-1"
   >
-    <component :is="`application-${mode}`" class="flex-col">
+    <component :is="`application-${mode.split('-')[0]}`" class="flex-col">
       <slot />
+      <div class="actions">
+        <input
+          type="button"
+          :value="rejectLabel"
+          class="reject"
+          @click="reject"
+          @mouseleave.prevent="no_return"
+        />
+        <input
+          type="button"
+          :value="acceptLabel"
+          class="accept"
+          @click="accept"
+          @mouseleave.prevent="no_return"
+        />
+      </div>
     </component>
     <application-scrim @click.prevent.stop="close" />
   </application-overlay>
@@ -29,21 +43,24 @@ export default {
   props: {
     cancelable: {
       type: Boolean,
-      default: true
-    },
-    position: {
-      type: String,
-      default: "",
-      validator: value => {
-        return value.match(/center|top|right|bottom|left/);
-      }
+      default: false
     },
     mode: {
       type: String,
       default: "window",
       validator: value => {
-        return value.match(/window|drawer/);
+        return value.match(
+          /window|drawer-center|drawer-top|drawer-right|drawer-bottom|drawer-left/
+        );
       }
+    },
+    rejectLabel: {
+      type: String,
+      default: "Agora não"
+    },
+    acceptLabel: {
+      type: String,
+      required: true
     }
   },
   data() {
@@ -52,16 +69,38 @@ export default {
     };
   },
   methods: {
+    no_return() {
+      return false;
+    },
+    reject() {
+      this.mounted = false;
+      setTimeout(() => {
+        this.$emit("reject");
+      });
+    },
+    accept() {
+      this.mounted = false;
+      setTimeout(() => {
+        this.$emit("accept");
+      });
+    },
     close() {
       if (this.cancelable) {
-        this.$emit("close");
+        this.mounted = false;
+        setTimeout(() => {
+          this.$emit("reject");
+        });
       }
     }
+  },
+  created() {
+    this.$el.focus();
   },
   mounted() {
     this.mounted = true;
   },
   beforeDestroy() {
+    this.$el.blur();
     this.mounted = false;
   }
 };
@@ -70,6 +109,7 @@ export default {
 <style lang="scss">
 @import "@scss/_utils";
 @import "@scss/_typography";
+@import "@scss/_motion";
 @import "@scss/variables";
 
 application-overlay {
@@ -78,6 +118,7 @@ application-overlay {
 
   application-scrim {
     background-color: var(--color-ui-overlay);
+    backdrop-filter: saturate(0) contrast(0.7);
     bottom: 0;
     display: block;
     left: 0;
@@ -90,8 +131,8 @@ application-overlay {
   &:not(._mounted) {
     application-window,
     application-drawer {
-      animation: anim_leave running;
-      animation-duration: var(--transition-duration-regular);
+      animation-play-state: running;
+      animation-duration: var(--motion-duration-regular);
       animation-iteration-count: 1;
       visibility: hidden;
     }
@@ -99,9 +140,9 @@ application-overlay {
   &._mounted {
     application-window,
     application-drawer {
-      animation: anim_enter running;
-      animation-duration: var(--transition-duration-regular);
-      animation-timing-function: var(--transition-timing-ease_out);
+      animation-play-state: running;
+      animation-duration: var(--motion-duration-regular);
+      animation-timing-function: var(--motion-timing-ease_out);
       animation-iteration-count: 1;
       visibility: visible;
     }
@@ -111,6 +152,8 @@ application-overlay {
   application-drawer {
     background: var(--color-ui-background);
     padding: var(--app-view-padding);
+    transition-property: visibility;
+    transition-duration: var(--motion-duration-regular);
 
     .actions {
       border-top: rem(1px) solid var(--color-ui-separator);
@@ -131,7 +174,7 @@ application-overlay {
         font-weight: $graphene-font-weight-semibold;
         height: rem(48px);
         transition-property: opacity;
-        transition-duration: var(--transition-duration-regular);
+        transition-duration: var(--motion-duration-regular);
         width: 100%;
         white-space: nowrap;
 
@@ -160,24 +203,28 @@ application-overlay {
     box-shadow: 0 0 rem(20px) rem(6px) $graphene-color-black-200;
   }
   &._window {
-    @keyframes anim_enter {
-      from {
-        transform: scale(1.1);
-      }
-      to {
-        transform: translateY(1);
+    &:not(._mounted) {
+      application-window {
+        animation-name: dialog_leave;
       }
     }
-    @keyframes anim_leave {
-      from {
-        transform: translateY(1);
-      }
-      to {
-        transform: translateY(1.1);
+    &._mounted {
+      application-window {
+        animation-name: dialog_enter;
       }
     }
   }
   &._top {
+    &:not(._mounted) {
+      application-drawer {
+        animation-name: slide_out_up;
+      }
+    }
+    &._mounted {
+      application-drawer {
+        animation-name: slide_in_down;
+      }
+    }
     application-drawer {
       border-bottom-left-radius: var(--ui-border-radius-regular);
       border-bottom-right-radius: var(--ui-border-radius-regular);
@@ -188,6 +235,16 @@ application-overlay {
     }
   }
   &._right {
+    &:not(._mounted) {
+      application-drawer {
+        animation-name: slide_out_right;
+      }
+    }
+    &._mounted {
+      application-drawer {
+        animation-name: slide_in_right;
+      }
+    }
     application-drawer {
       @supports (padding-right: env(safe-area-inset-right)) {
         padding-bottom: calc(
@@ -201,20 +258,14 @@ application-overlay {
     }
   }
   &._bottom {
-    @keyframes anim_enter {
-      from {
-        transform: translateY(100%);
-      }
-      to {
-        transform: translateY(0%);
+    &:not(._mounted) {
+      application-drawer {
+        animation-name: slide_out_down;
       }
     }
-    @keyframes anim_leave {
-      from {
-        transform: translateY(0%);
-      }
-      to {
-        transform: translateY(100%);
+    &._mounted {
+      application-drawer {
+        animation-name: slide_in_up;
       }
     }
     application-drawer {
@@ -229,6 +280,16 @@ application-overlay {
     }
   }
   &._left {
+    &:not(._mounted) {
+      application-drawer {
+        animation-name: slide_out_left;
+      }
+    }
+    &._mounted {
+      application-drawer {
+        animation-name: slide_in_left;
+      }
+    }
     application-drawer {
       @supports (padding-left: env(safe-area-inset-left)) {
         padding-bottom: calc(
