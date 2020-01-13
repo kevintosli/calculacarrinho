@@ -17,20 +17,8 @@
     <component :is="`application-${mode.split('-')[0]}`" class="flex-col">
       <slot />
       <div class="actions">
-        <input
-          type="button"
-          :value="rejectLabel"
-          class="reject"
-          @click="reject"
-          @mouseleave.prevent="no_return"
-        />
-        <input
-          type="button"
-          :value="acceptLabel"
-          class="accept"
-          @click="accept"
-          @mouseleave.prevent="no_return"
-        />
+        <input type="button" :value="rejectLabel" class="reject" @click="reject" @mouseleave.prevent="no_return" />
+        <input type="button" :value="acceptLabel" class="accept" @click="accept" @mouseleave.prevent="no_return" />
       </div>
     </component>
     <application-scrim @click.prevent.stop="close" />
@@ -49,9 +37,7 @@ export default {
       type: String,
       default: "window",
       validator: value => {
-        return value.match(
-          /window|drawer-center|drawer-top|drawer-right|drawer-bottom|drawer-left/
-        );
+        return value.match(/window|drawer-center|drawer-top|drawer-right|drawer-bottom|drawer-left/);
       }
     },
     rejectLabel: {
@@ -93,15 +79,15 @@ export default {
       }
     }
   },
-  created() {
-    this.$el.focus();
-  },
   mounted() {
     this.mounted = true;
+    this.$el.focus();
   },
   beforeDestroy() {
-    this.$el.blur();
     this.mounted = false;
+  },
+  destroyed() {
+    document.querySelector("application").focus();
   }
 };
 </script>
@@ -195,8 +181,7 @@ application-overlay {
   }
   application-window {
     border-radius: var(--ui-border-radius-regular);
-    box-shadow: 0 rem(6px) rem(8px) rem(-3px) $graphene-color-black-200,
-      0 rem(8px) rem(24px) rem(-4px) $graphene-color-black-300;
+    box-shadow: 0 rem(6px) rem(8px) rem(-3px) $graphene-color-black-200, 0 rem(8px) rem(24px) rem(-4px) $graphene-color-black-300;
     margin: calc(var(--app-view-padding) + var(--app-view-padding) * 0.5);
   }
   application-drawer {
@@ -247,12 +232,8 @@ application-overlay {
     }
     application-drawer {
       @supports (padding-right: env(safe-area-inset-right)) {
-        padding-bottom: calc(
-          env(safe-area-inset-bottom) + var(--app-view-padding)
-        );
-        padding-right: calc(
-          env(safe-area-inset-right) + var(--app-view-padding)
-        );
+        padding-bottom: calc(env(safe-area-inset-bottom) + var(--app-view-padding));
+        padding-right: calc(env(safe-area-inset-right) + var(--app-view-padding));
         padding-top: calc(env(safe-area-inset-top) + var(--app-view-padding));
       }
     }
@@ -273,9 +254,7 @@ application-overlay {
       border-top-right-radius: var(--ui-border-radius-regular);
 
       @supports (padding-bottom: env(safe-area-inset-bottom)) {
-        padding-bottom: calc(
-          env(safe-area-inset-bottom) + var(--app-view-padding)
-        );
+        padding-bottom: calc(env(safe-area-inset-bottom) + var(--app-view-padding));
       }
     }
   }
@@ -292,9 +271,7 @@ application-overlay {
     }
     application-drawer {
       @supports (padding-left: env(safe-area-inset-left)) {
-        padding-bottom: calc(
-          env(safe-area-inset-bottom) + var(--app-view-padding)
-        );
+        padding-bottom: calc(env(safe-area-inset-bottom) + var(--app-view-padding));
         padding-left: calc(env(safe-area-inset-left) + var(--app-view-padding));
         padding-top: calc(env(safe-area-inset-top) + var(--app-view-padding));
       }
