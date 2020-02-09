@@ -1,5 +1,5 @@
 <template>
-  <application class="absolute pin-a flex-col" @click.prevent="no_zoom" ontouchstart="" :version="app_version">
+  <application class="absolute pin-a flex-col" @click.prevent="no_return" ontouchstart="" :version="app_version">
     <!-- Desktop -->
     <template v-if="!isMobile">
       <div class="_viewport_desktop flex-col align-items-center justify-center text-center absolute pin-a">
@@ -75,6 +75,7 @@
 </template>
 
 <script>
+import { no_return } from "@js/utils";
 import { mapGetters, mapMutations } from "vuex";
 import QRCode from "@chenfengyuan/vue-qrcode";
 
@@ -100,6 +101,7 @@ export default {
   },
   computed: {
     ...mapGetters(["cart_list", "cart_list_updates", "isMobile"]),
+    no_return,
     qr_desktop_options() {
       return {
         scale: 6,
@@ -139,12 +141,6 @@ export default {
     clear_shoppingcart() {
       this.cart_list_reset();
       this.overlay_clearshoppingcart = false;
-    },
-    no_zoom() {
-      return false;
-    },
-    no_return() {
-      return false;
     },
     handleResize() {
       this.changeMobileView(window.innerWidth <= 425);
