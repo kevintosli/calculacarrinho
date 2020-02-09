@@ -17,6 +17,7 @@ html {
   --color-ui-accent: #{$color-ui-accent-400};
   --color-ui-delete: #{$graphene-color-orange-400};
   --color-ui-background: #{$graphene-color-white-200};
+  --color-ui-background-secondary: #{$graphene-color-gray-200};
   --color-ui-separator: #{$graphene-color-black-200};
   --color-ui-listalt: hsla(0, 0%, 0%, 0.03);
   --color-ui-overlay: #{$graphene-color-black-300};
@@ -35,6 +36,7 @@ html {
     --color-ui-accent: #{$color-ui-accent-300};
     --color-ui-delete: #{$graphene-color-orange-300};
     --color-ui-background: #{$graphene-color-black-700};
+    --color-ui-background-secondary: #{$graphene-color-gray-700};
     --color-ui-separator: #{$graphene-color-white-600};
     --color-ui-listalt: hsla(0, 0%, 100%, 0.05);
     --color-ui-overlay: #{$graphene-color-black-500};
