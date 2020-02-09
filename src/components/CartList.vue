@@ -5,7 +5,7 @@
         v-for="(item, index) in list"
         :name="item.name"
         :units="item.units"
-        :price="item.price"
+        :price="String(item.price * item.units)"
         :selected="item.selected"
         :item-index="index"
         :key="`${index}-${item.selected}`"
