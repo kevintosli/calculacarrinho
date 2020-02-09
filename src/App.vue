@@ -101,7 +101,6 @@ export default {
   },
   computed: {
     ...mapGetters(["cart_list", "cart_list_updates", "isMobile"]),
-    no_return,
     qr_desktop_options() {
       return {
         scale: 6,
@@ -119,6 +118,7 @@ export default {
     }
   },
   methods: {
+    no_return,
     ...mapMutations(["changeMobileView", "cart_list_reset"]),
     calc_list_units() {
       let sum = 0;
