@@ -1,5 +1,8 @@
 <template>
-  <div :class="['calc-controls-wrapper', { _editing: editing }]">
+  <div
+    :class="['calc-controls-wrapper', { _editing: editing }]"
+    @dblclick="no_return"
+  >
     <div class="calc-header flex-row">
       <div
         :class="[
@@ -9,15 +12,18 @@
           }
         ]"
       >
-        <input
-          class="_name-input"
-          type="text"
-          name="item-name"
-          v-model="input_name.value"
-          placeholder="Nome do item"
-          @focus="input_focus"
-          @blur="input_blur"
-        />
+        <form action="#" @submit.prevent="input_get_blur">
+          <input
+            class="_name-input"
+            type="text"
+            name="item-name"
+            ref="item_name"
+            v-model="input_name.value"
+            placeholder="Nome do item"
+            @focus="input_focus"
+            @blur="input_blur"
+          />
+        </form>
       </div>
       <div class="item-un flex-shrink-0">{{ input_units.value }}</div>
       <div
@@ -81,7 +87,11 @@
           @click="reset_controls"
         >
           {{
-            is_initial_input_price && this.input_units.value == 1 ? "AC" : "C"
+            is_initial_input_units &&
+            is_initial_input_price &&
+            is_initial_input_name
+              ? "AC"
+              : "C"
           }}
         </div>
         <div
@@ -139,6 +149,7 @@
 </template>
 
 <script>
+import { no_return } from "@js/utils";
 import { mapMutations, mapGetters, mapActions } from "vuex";
 
 export default {
@@ -207,11 +218,18 @@ export default {
   },
   computed: {
     ...mapGetters(["cart_list_selected"]),
+    is_initial_input_name() {
+      return this.input_name.value === "";
+    },
     is_initial_input_price() {
       return this.input_price.value == "0.00";
+    },
+    is_initial_input_units() {
+      return this.input_units.value == 1;
     }
   },
   methods: {
+    no_return,
     ...mapMutations(["cart_add", "notify"]),
     ...mapActions(["cart_update", "cart_remove"]),
     add_to_list() {
@@ -267,6 +285,9 @@ export default {
     input_blur() {
       this.input_name.value.trim();
       this.input_name.focus = false;
+    },
+    input_get_blur() {
+      this.$refs.item_name.blur();
     }
   }
 };
@@ -294,7 +315,8 @@ export default {
   }
 
   &._editing {
-    box-shadow: inset 0 rem(3px) 0 var(--color-ui-accent);
+    --color-ui-background: var(--color-ui-background-secondary);
+    // box-shadow: inset 0 rem(3px) 0 var(--color-ui-accent);
   }
 
   .calc-header {
