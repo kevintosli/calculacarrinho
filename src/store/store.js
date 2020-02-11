@@ -9,7 +9,8 @@ export default new Vuex.Store({
     cart_list_selected: {},
     cart_list_updates: 0,
     notification_list: [],
-    isMobile: false,
+    isApp: !!navigator.standalone,
+    isMobile: !!/mobile/i.test(navigator.userAgent),
     iOSDevice: !!/iPad|iPhone|iPod/.test(navigator.platform)
   },
   getters: {
@@ -17,6 +18,7 @@ export default new Vuex.Store({
     cart_list_selected: ({ cart_list_selected }) => cart_list_selected,
     cart_list_updates: ({ cart_list_updates }) => cart_list_updates,
     notification_list: ({ notification_list }) => notification_list,
+    isApp: ({ isApp }) => isApp,
     isMobile: ({ isMobile }) => isMobile,
     iOSDevice: ({ iOSDevice }) => iOSDevice
   },
@@ -72,9 +74,6 @@ export default new Vuex.Store({
       const TIMEOUT = setTimeout(() => {
         state.notification_list = [];
       }, payload.duration);
-    },
-    changeMobileView(state, boolean) {
-      state.isMobile = boolean;
     }
   },
   actions: {

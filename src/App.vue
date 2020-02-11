@@ -1,11 +1,23 @@
 <template>
-  <application class="absolute pin-a flex-col" @click.prevent="no_return" ontouchstart="" :version="app_version">
+  <application
+    class="absolute pin-a flex-col"
+    @click.prevent="no_return"
+    ontouchstart=""
+    :version="app_version"
+  >
     <!-- Desktop -->
     <template v-if="!isMobile">
-      <div class="_viewport_desktop flex-col align-items-center justify-center text-center absolute pin-a">
-        <QRCode class="qr_code" :value="qr_desktop_address" :options="qr_desktop_options" />
+      <div
+        class="_viewport_desktop flex-col align-items-center justify-center text-center absolute pin-a"
+      >
+        <QRCode
+          class="qr_code"
+          :value="qr_desktop_address"
+          :options="qr_desktop_options"
+        />
         <div class="message">
-          Escaneie o código com a câmera do seu celular para acessar o aplicativo.
+          Escaneie o código com a câmera do seu celular para acessar o
+          aplicativo.
         </div>
         <div class="submessage">
           Este aplicativo foi desenvolvido para funcionar apenas em smartphones.
@@ -18,7 +30,12 @@
       <Notifications />
 
       <transition name="fade">
-        <Overlay v-if="overlay_clearshoppingcart" accept-label="Limpar o carrinho" @reject="overlay_clearshoppingcart = false" @accept="clear_shoppingcart">
+        <Overlay
+          v-if="overlay_clearshoppingcart"
+          accept-label="Limpar o carrinho"
+          @reject="overlay_clearshoppingcart = false"
+          @accept="clear_shoppingcart"
+        >
           <p class="graphene-font-style-paragraph">
             Quer mesmo limpar o carrinho?
           </p>
@@ -30,6 +47,7 @@
 
       <content class="flex-col flex-grow-1 flex-shrink-1 relative">
         <template v-if="cart_list.length">
+          <span v-if="isApp">Você salvou como app!</span>
           <div class="heading">
             <h1 class="_label text-center">Carrinho</h1>
             <!-- <div class="_icon grphn-icon">questionmark_circle</div> -->
@@ -44,7 +62,11 @@
 
           <CartList :list="cart_list" />
 
-          <cartlist-footer class="flex-col flex-shrink-0" :key="`${cart_list_updates}-${calc_list_total()}`" ontouchstart="">
+          <cartlist-footer
+            class="flex-col flex-shrink-0"
+            :key="`${cart_list_updates}-${calc_list_total()}`"
+            ontouchstart=""
+          >
             <cartlist-footer-item class="flex-row">
               <div class="__label">Itens no carrinho</div>
               <div class="__value">{{ calc_list_units() }}un</div>
@@ -54,7 +76,12 @@
               <div class="__value">{{ calc_list_total() }}</div>
             </cartlist-footer-item>
             <cartlist-controls class="flex-col">
-              <cartlist-control class="_delete" role="button" @click="overlay_clearshoppingcart = true" @mouseleave.prevent="no_return">
+              <cartlist-control
+                class="_delete"
+                role="button"
+                @click="overlay_clearshoppingcart = true"
+                @mouseleave.prevent="no_return"
+              >
                 <div class="__label">Remover todos os itens</div>
                 <div class="__icon grphn-icon">trashcan</div>
               </cartlist-control>
@@ -63,8 +90,11 @@
         </template>
 
         <template v-else>
-          <div class="cart-empty flex-col flex-grow-1 align-items-center justify-center text-center">
-            Seu carrinho de compras está vazio. Digite um valor, defina a quantidade e o nome do item é opcional.
+          <div
+            class="cart-empty flex-col flex-grow-1 align-items-center justify-center text-center"
+          >
+            Seu carrinho de compras está vazio. Digite um valor, defina a
+            quantidade e o nome do item é opcional.
           </div>
         </template>
       </content>
@@ -100,7 +130,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["cart_list", "cart_list_updates", "isMobile"]),
+    ...mapGetters(["cart_list", "cart_list_updates", "isMobile", "isApp"]),
     qr_desktop_options() {
       return {
         scale: 6,
@@ -141,24 +171,54 @@ export default {
     clear_shoppingcart() {
       this.cart_list_reset();
       this.overlay_clearshoppingcart = false;
-    },
-    handleResize() {
-      this.changeMobileView(window.innerWidth <= 425);
     }
   },
   created() {
     document.title = "Carregando...";
-    this.handleResize();
     if (this.iOSDevice) {
       document.querySelector("body").classList.add("iOS");
     }
+    let browser = "";
+    let op_sys = "";
+    window.console.log(navigator.userAgent);
+    // Browser detect
+    if (/Edge|EdgiOS|Edg/.test(navigator.userAgent)) {
+      browser = "Edge";
+    } else if (/chrome|crios/i.test(navigator.userAgent)) {
+      browser = "Chrome";
+    } else if (/firefox|fxios/i.test(navigator.userAgent)) {
+      browser = "Firefox";
+    } else if (
+      /MSIE/.test(navigator.userAgent) ||
+      !!document.documentMode == true
+    ) {
+      browser = "Internet Explorer";
+    } else if (/safari/i.test(navigator.userAgent)) {
+      browser = "Safari";
+    } else {
+      browser = "unknown";
+    }
+    // OS detect
+    if (/ipad/i.test(navigator.userAgent)) {
+      op_sys = "iPad OS";
+    } else if (/iphone/i.test(navigator.userAgent)) {
+      op_sys = "iOS";
+    } else if (/android/i.test(navigator.userAgent)) {
+      op_sys = "Android";
+    } else if (/windows/i.test(navigator.userAgent)) {
+      op_sys = "Windows";
+    } else if (/macintosh/i.test(navigator.userAgent)) {
+      op_sys = "MacOS";
+    }
+    window.console.log("Browser:", browser);
+    window.console.log("Operational System:", op_sys);
   },
   mounted() {
     document.title = "Calcula Carrinho";
-    window.addEventListener("resize", this.handleResize, { passive: true });
+    // window.addEventListener("resize", this.handleResize, { passive: true });
   },
   beforeDestroy() {
-    window.removeEventListener("resize", this.handleResize, { passive: true });
+    // window.removeEventListener("resize", this.handleResize, { passive: true });
   }
 };
 </script>
