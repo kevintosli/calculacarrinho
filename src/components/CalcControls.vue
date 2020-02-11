@@ -51,7 +51,7 @@
             { _invisible: editing }
           ]"
           key="add"
-          @click="add_to_list"
+          @mouseup="add_to_list"
         >
           arrow_up
         </div>
@@ -61,7 +61,7 @@
             { _invisible: !editing }
           ]"
           key="save"
-          @click="update_to_list"
+          @mouseup="update_to_list"
         >
           checkmark
         </div>
@@ -69,14 +69,14 @@
       <div
         class="calc-key"
         style="grid-area: plus;"
-        @click="input_units.add(1)"
+        @mouseup="input_units.add(1)"
       >
         <div class="calc-inner-key grphn-icon __accent">plus</div>
       </div>
       <div
         class="calc-key"
         style="grid-area: minus;"
-        @click="input_units.remove(1)"
+        @mouseup="input_units.remove(1)"
       >
         <div class="calc-inner-key grphn-icon __accent">minus</div>
       </div>
@@ -84,7 +84,7 @@
         <div
           v-if="!editing"
           class="calc-inner-key __accent"
-          @click="reset_controls"
+          @mouseup="reset_controls"
         >
           {{
             is_initial_input_units &&
@@ -97,41 +97,41 @@
         <div
           v-else
           class="calc-inner-key grphn-icon __delete"
-          @click="remove_from_list"
+          @mouseup="remove_from_list"
         >
           trashcan
         </div>
       </div>
       <!-- Numbers -->
       <div class="calc-key" style="grid-area: r3c1;">
-        <div class="calc-inner-key" @click="input_price.update(1)">1</div>
+        <div class="calc-inner-key" @mouseup="input_price.update(1)">1</div>
       </div>
       <div class="calc-key" style="grid-area: r3c2;">
-        <div class="calc-inner-key" @click="input_price.update(2)">2</div>
+        <div class="calc-inner-key" @mouseup="input_price.update(2)">2</div>
       </div>
       <div class="calc-key" style="grid-area: r3c3;">
-        <div class="calc-inner-key" @click="input_price.update(3)">3</div>
+        <div class="calc-inner-key" @mouseup="input_price.update(3)">3</div>
       </div>
       <div class="calc-key" style="grid-area: r2c1;">
-        <div class="calc-inner-key" @click="input_price.update(4)">4</div>
+        <div class="calc-inner-key" @mouseup="input_price.update(4)">4</div>
       </div>
       <div class="calc-key" style="grid-area: r2c2;">
-        <div class="calc-inner-key" @click="input_price.update(5)">5</div>
+        <div class="calc-inner-key" @mouseup="input_price.update(5)">5</div>
       </div>
       <div class="calc-key" style="grid-area: r2c3;">
-        <div class="calc-inner-key" @click="input_price.update(6)">6</div>
+        <div class="calc-inner-key" @mouseup="input_price.update(6)">6</div>
       </div>
       <div class="calc-key" style="grid-area: r1c1;">
-        <div class="calc-inner-key" @click="input_price.update(7)">7</div>
+        <div class="calc-inner-key" @mouseup="input_price.update(7)">7</div>
       </div>
       <div class="calc-key" style="grid-area: r1c2;">
-        <div class="calc-inner-key" @click="input_price.update(8)">8</div>
+        <div class="calc-inner-key" @mouseup="input_price.update(8)">8</div>
       </div>
       <div class="calc-key" style="grid-area: r1c3;">
-        <div class="calc-inner-key" @click="input_price.update(9)">9</div>
+        <div class="calc-inner-key" @mouseup="input_price.update(9)">9</div>
       </div>
       <div class="calc-key __key-zero" style="grid-area: zero;">
-        <div class="calc-inner-key" @click="input_price.update(0)">
+        <div class="calc-inner-key" @mouseup="input_price.update(0)">
           <div class="__key-zero-1" style="grid-area: key1;">0</div>
           <div class="__key-zero-2" style="grid-area: key2;">0</div>
         </div>
@@ -139,7 +139,7 @@
       <div class="calc-key" style="grid-area: erase;">
         <div
           :class="['calc-inner-key grphn-icon']"
-          @click="input_price.backspace"
+          @mouseup="input_price.backspace"
         >
           delete_left
         </div>
