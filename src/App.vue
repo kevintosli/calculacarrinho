@@ -29,12 +29,13 @@
     <template v-else>
       <Notifications />
 
-      <transition name="fade">
+      <transition-group name="fade">
         <Overlay
           v-if="overlay_clearshoppingcart"
           accept-label="Limpar o carrinho"
           @reject="overlay_clearshoppingcart = false"
           @accept="clear_shoppingcart"
+          key="clearshoppincart"
         >
           <p class="graphene-font-style-paragraph">
             Quer mesmo limpar o carrinho?
@@ -43,7 +44,18 @@
             Esta ação não poderá ser desfeita.
           </p>
         </Overlay>
-      </transition>
+
+        <Overlay
+          v-if="!overlay_was_app_updated"
+          accept-label="Concluído"
+          mode="drawer-bottom"
+          :reject-label="false"
+          @accept="overlay_was_app_updated = true"
+          key="appupdates"
+        >
+          Atualizações
+        </Overlay>
+      </transition-group>
 
       <content class="flex-col flex-grow-1 flex-shrink-1 relative">
         <template v-if="cart_list.length">
@@ -122,6 +134,7 @@
             </ol>
             <!-- Seu carrinho de compras está vazio. Digite um valor, defina a quantidade e o nome do item é opcional. -->
           </div>
+          <!-- <div class="flex-shrink-0" style="height: var(--app-view-padding);" /> -->
         </template>
       </content>
 
@@ -146,7 +159,8 @@ export default {
   },
   data() {
     return {
-      overlay_clearshoppingcart: false
+      overlay_clearshoppingcart: false,
+      overlay_was_app_updated: true
     };
   },
   watch: {
@@ -175,7 +189,11 @@ export default {
   },
   methods: {
     no_return,
-    ...mapMutations(["changeMobileView", "cart_list_reset"]),
+    ...mapMutations([
+      "changeMobileView",
+      "cart_unselect_all",
+      "cart_list_reset"
+    ]),
     calc_list_units() {
       let sum = 0;
       this.cart_list.forEach(item => {
@@ -195,6 +213,7 @@ export default {
       });
     },
     clear_shoppingcart() {
+      this.cart_unselect_all();
       this.cart_list_reset();
       this.overlay_clearshoppingcart = false;
     },
@@ -241,6 +260,13 @@ content {
 
   @supports (padding-top: env(safe-area-inset-top)) {
     padding-top: calc(var(--app-view-padding) + env(safe-area-inset-top));
+  }
+
+  &:after {
+    content: "";
+    flex-shrink: 0;
+    display: block;
+    height: var(--app-view-padding);
   }
 
   .heading {
