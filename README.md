@@ -17,7 +17,7 @@ Confira nosso [quadro no Trello](https://trello.com/b/GUcyocue/calcula-carrinho 
 - [Reportar um bug](https://github.com/kevintosli/calculacarrinho/issues/new?title=[Bug%20Report]%20&labels=bug)
 
 
-Siga também nosso principal canal de comunicação social no Twitter e caso queira um contato mais íntimo, [redija um e-mail](mailto:kevintosli@icloud.com).
+Siga nosso perfil no [Twitter](https://twitter.com/toslilabs), nosso principal canal de comunicação social. :sunglasses:
 
 
 ## Package scripts
