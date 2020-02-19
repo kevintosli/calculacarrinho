@@ -1,7 +1,6 @@
 <template>
   <application
     class="absolute pin-a flex-col"
-    @click.prevent="no_return"
     ontouchstart
     :version="app_version"
   >
@@ -98,6 +97,16 @@
               </cartlist-control>
             </cartlist-controls>
           </cartlist-footer>
+
+          <div class="little-about-info text-right">
+            <p>Calcula Carrinho v{{ app_version }} [BETA]</p>
+            <p>
+              © Copyright 2020
+              <a target="_blank" href="https://github.com/toslilabs"
+                >Tosli Labs</a
+              >.
+            </p>
+          </div>
         </template>
 
         <template v-else>
@@ -382,6 +391,18 @@ cartlist-controls {
       font-size: rem(24px);
       justify-content: flex-end;
     }
+  }
+}
+
+.little-about-info {
+  @include graphene-font-style-meta();
+  color: var(--color-text-placeholder);
+  margin: rem(16px) var(--app-view-padding) 0;
+
+  a:link,
+  a:visited {
+    color: var(--color-ui-accent);
+    // text-decoration: underline;
   }
 }
 
