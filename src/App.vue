@@ -1,11 +1,22 @@
 <template>
-  <application class="absolute pin-a flex-col" @click.prevent="no_return" ontouchstart="" :version="app_version">
+  <application
+    class="absolute pin-a flex-col"
+    ontouchstart
+    :version="app_version"
+  >
     <!-- Desktop -->
     <template v-if="!isMobile">
-      <div class="_viewport_desktop flex-col align-items-center justify-center text-center absolute pin-a">
-        <QRCode class="qr_code" :value="qr_desktop_address" :options="qr_desktop_options" />
+      <div
+        class="_viewport_desktop flex-col align-items-center justify-center text-center absolute pin-a"
+      >
+        <QRCode
+          class="qr_code"
+          :value="qr_desktop_address"
+          :options="qr_desktop_options"
+        />
         <div class="message">
-          Escaneie o código com a câmera do seu celular para acessar o aplicativo.
+          Escaneie o código com a câmera do seu celular para acessar o
+          aplicativo.
         </div>
         <div class="submessage">
           Este aplicativo foi desenvolvido para funcionar apenas em smartphones.
@@ -17,8 +28,14 @@
     <template v-else>
       <Notifications />
 
-      <transition name="fade">
-        <Overlay v-if="overlay_clearshoppingcart" accept-label="Limpar o carrinho" @reject="overlay_clearshoppingcart = false" @accept="clear_shoppingcart">
+      <transition-group name="fade">
+        <Overlay
+          v-if="overlay_clearshoppingcart"
+          accept-label="Limpar o carrinho"
+          @reject="overlay_clearshoppingcart = false"
+          @accept="clear_shoppingcart"
+          key="clearshoppincart"
+        >
           <p class="graphene-font-style-paragraph">
             Quer mesmo limpar o carrinho?
           </p>
@@ -26,7 +43,18 @@
             Esta ação não poderá ser desfeita.
           </p>
         </Overlay>
-      </transition>
+
+        <Overlay
+          v-if="!overlay_was_app_updated"
+          accept-label="Concluído"
+          mode="drawer-bottom"
+          :reject-label="false"
+          @accept="overlay_was_app_updated = true"
+          key="appupdates"
+        >
+          Atualizações
+        </Overlay>
+      </transition-group>
 
       <content class="flex-col flex-grow-1 flex-shrink-1 relative">
         <template v-if="cart_list.length">
@@ -44,7 +72,11 @@
 
           <CartList :list="cart_list" />
 
-          <cartlist-footer class="flex-col flex-shrink-0" :key="`${cart_list_updates}-${calc_list_total()}`" ontouchstart="">
+          <cartlist-footer
+            class="flex-col flex-shrink-0"
+            :key="`${cart_list_updates}-${calc_list_total()}`"
+            ontouchstart
+          >
             <cartlist-footer-item class="flex-row">
               <div class="__label">Itens no carrinho</div>
               <div class="__value">{{ calc_list_units() }}un</div>
@@ -54,18 +86,64 @@
               <div class="__value">{{ calc_list_total() }}</div>
             </cartlist-footer-item>
             <cartlist-controls class="flex-col">
-              <cartlist-control class="_delete" role="button" @click="overlay_clearshoppingcart = true" @mouseleave.prevent="no_return">
+              <cartlist-control
+                class="_delete"
+                role="button"
+                @click="overlay_clearshoppingcart = true"
+                @mouseleave.prevent="no_return"
+              >
                 <div class="__label">Remover todos os itens</div>
                 <div class="__icon grphn-icon">trashcan</div>
               </cartlist-control>
             </cartlist-controls>
           </cartlist-footer>
+
+          <div class="little-about-info text-right">
+            <p>Calcula Carrinho v{{ app_version }} [BETA]</p>
+            <p>
+              © Copyright 2020
+              <a target="_blank" href="https://github.com/toslilabs"
+                >Tosli Labs</a
+              >.
+            </p>
+          </div>
         </template>
 
         <template v-else>
-          <div class="cart-empty flex-col flex-grow-1 align-items-center justify-center text-center">
-            Seu carrinho de compras está vazio. Digite um valor, defina a quantidade e o nome do item é opcional.
+          <div
+            class="cart-empty flex-col flex-grow-1 align-items-center justify-center"
+          >
+            <p>
+              Seu carrinho de compras está vazio e pronto para ser preenchido.
+            </p>
+            <ol class="walkthrough">
+              <li>Comece digitando o valor do item no teclado abaixo;</li>
+              <li>
+                Os botões
+                <span class="cart-empty-key-helper grphn-icon">
+                  plus
+                </span>
+                e
+                <span class="cart-empty-key-helper grphn-icon">
+                  minus
+                </span>
+                definem as unidades, mínimo de 1 un;
+              </li>
+              <li>
+                Se preferir, defina um nome para este item tocando em "nome do
+                item";
+              </li>
+              <li>
+                Toque no botão
+                <span class="cart-empty-key-helper grphn-icon">
+                  arrow_up
+                </span>
+                para adicionar na lista e pronto.
+              </li>
+            </ol>
+            <!-- Seu carrinho de compras está vazio. Digite um valor, defina a quantidade e o nome do item é opcional. -->
           </div>
+          <!-- <div class="flex-shrink-0" style="height: var(--app-view-padding);" /> -->
         </template>
       </content>
 
@@ -90,7 +168,8 @@ export default {
   },
   data() {
     return {
-      overlay_clearshoppingcart: false
+      overlay_clearshoppingcart: false,
+      overlay_was_app_updated: true
     };
   },
   watch: {
@@ -119,7 +198,11 @@ export default {
   },
   methods: {
     no_return,
-    ...mapMutations(["changeMobileView", "cart_list_reset"]),
+    ...mapMutations([
+      "changeMobileView",
+      "cart_unselect_all",
+      "cart_list_reset"
+    ]),
     calc_list_units() {
       let sum = 0;
       this.cart_list.forEach(item => {
@@ -139,6 +222,7 @@ export default {
       });
     },
     clear_shoppingcart() {
+      this.cart_unselect_all();
       this.cart_list_reset();
       this.overlay_clearshoppingcart = false;
     },
@@ -185,6 +269,13 @@ content {
 
   @supports (padding-top: env(safe-area-inset-top)) {
     padding-top: calc(var(--app-view-padding) + env(safe-area-inset-top));
+  }
+
+  &:after {
+    content: "";
+    flex-shrink: 0;
+    display: block;
+    height: var(--app-view-padding);
   }
 
   .heading {
@@ -303,8 +394,33 @@ cartlist-controls {
   }
 }
 
+.little-about-info {
+  @include graphene-font-style-meta();
+  color: var(--color-text-placeholder);
+  margin: rem(16px) var(--app-view-padding) 0;
+
+  a:link,
+  a:visited {
+    color: var(--color-ui-accent);
+    // text-decoration: underline;
+  }
+}
+
 .cart-empty {
   padding: 0 calc(var(--app-view-padding) * 2.5);
+
+  .walkthrough {
+    @include graphene-font-style-label();
+    color: var(--color-text-description);
+    margin-top: rem(8px);
+  }
+  .cart-empty-key-helper {
+    background-color: var(--color-ui-separator);
+    border-radius: var(--ui-border-radius-regular);
+    display: inline-block;
+    text-align: center;
+    padding: rem(3px);
+  }
 }
 
 ._viewport_desktop {

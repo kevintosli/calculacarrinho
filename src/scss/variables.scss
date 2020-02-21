@@ -13,6 +13,7 @@ html {
   // Colors
   --color-text-heading: #{$graphene-color-black-700};
   --color-text-paragraph: #{$graphene-color-black-600};
+  --color-text-description: #{$graphene-color-black-500};
   --color-text-placeholder: #{$graphene-color-black-400};
   --color-ui-accent: #{$color-ui-accent-400};
   --color-ui-delete: #{$graphene-color-orange-400};
@@ -32,6 +33,7 @@ html {
   @media (prefers-color-scheme: dark) {
     --color-text-heading: #{$graphene-color-white-200};
     --color-text-paragraph: #{$graphene-color-white-200};
+    --color-text-description: #{$graphene-color-white-300};
     --color-text-placeholder: #{$graphene-color-white-400};
     --color-ui-accent: #{$color-ui-accent-300};
     --color-ui-delete: #{$graphene-color-orange-300};
