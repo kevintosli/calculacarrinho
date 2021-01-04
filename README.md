@@ -15,7 +15,7 @@ Acompanhe nosso [quadro no Trello](https://trello.com/b/GUcyocue/calcula-carrinh
 Para contribuir para o desenvolvimento, envie suas sugestões ou reporte bugs pelos links abaixo:
 
 - [Ver registo de atualizações](/CHANGELOG.md);
-- [Enviar sugestão](issues/new?title=[Suggestion]%20&labels=suggestion)
+- [Enviar sugestão](https://github.com/kevintosli/calculacarrinho/issues/new?title=[Suggestion]%20&labels=suggestion)
 - [Reportar um bug](https://github.com/kevintosli/calculacarrinho/issues/new?title=[Bug%20Report]%20&labels=bug)
 
 
