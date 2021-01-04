@@ -19,7 +19,7 @@ Para contribuir para o desenvolvimento, envie suas sugestões ou reporte bugs pe
 - [Reportar um bug](https://github.com/kevintosli/calculacarrinho/issues/new?title=[Bug%20Report]%20&labels=bug)
 
 
-Siga nosso perfil no [Twitter](https://twitter.com/toslilabs), nosso principal canal de comunicação social. :sunglasses:
+Siga nosso perfil no [Twitter](https://twitter.com/rara_labs), nosso principal canal de comunicação social. :sunglasses:
 
 
 ## Package scripts
