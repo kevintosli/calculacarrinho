@@ -12,14 +12,16 @@
           }
         ]"
       >
-        <form action="#" @submit.prevent="input_get_blur">
+        <form autocomplete="false" action="#" @submit.prevent="input_get_blur">
           <input
             class="_name-input"
             type="text"
-            name="item-name"
+            name="product"
             ref="item_name"
             v-model="input_name.value"
             placeholder="Nome do item"
+            enterkeyhint="done"
+            autocomplete="off"
             @focus="input_focus"
             @blur="input_blur"
           />
@@ -51,6 +53,7 @@
             { _invisible: editing }
           ]"
           key="add"
+          title="Adicionar à lista"
           @click="add_to_list"
         >
           arrow_up
@@ -61,6 +64,7 @@
             { _invisible: !editing }
           ]"
           key="save"
+          title="Salvar alterações"
           @click="update_to_list"
         >
           checkmark
@@ -69,6 +73,7 @@
       <div
         class="calc-key"
         style="grid-area: plus;"
+        title="Aumentar quantidade"
         @click="input_units.add(1)"
       >
         <div class="calc-inner-key grphn-icon __accent">plus</div>
@@ -76,6 +81,7 @@
       <div
         class="calc-key"
         style="grid-area: minus;"
+        title="Diminuir quantidade"
         @click="input_units.remove(1)"
       >
         <div class="calc-inner-key grphn-icon __accent">minus</div>
@@ -84,6 +90,7 @@
         <div
           v-if="!editing"
           class="calc-inner-key __accent"
+          title="Limpar"
           @click="reset_controls"
         >
           {{
