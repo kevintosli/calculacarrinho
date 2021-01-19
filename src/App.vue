@@ -99,12 +99,11 @@
           </cartlist-footer>
 
           <div class="little-about-info text-right">
-            <p>Calcula Carrinho v{{ app_version }} [BETA]</p>
+            <p>{{ app_title }} v{{ app_version }}{{ app_version_prefix }}</p>
+            <p>Feito com ♥︎ por {{ app_developer }}</p>
             <p>
-              © Copyright 2020
-              <a target="_blank" href="https://github.com/toslilabs"
-                >Tosli Labs</a
-              >.
+              {{ app_copyright }} · 
+              <a target="_blank" :href="app_owner_url">{{ app_owner }}</a>
             </p>
           </div>
         </template>
@@ -114,28 +113,27 @@
             class="cart-empty flex-col flex-grow-1 align-items-center justify-center"
           >
             <p>
-              Seu carrinho de compras está vazio e pronto para ser preenchido.
+              Seu carrinho de compras está vazio
             </p>
             <ol class="walkthrough">
-              <li>Comece digitando o valor do item no teclado abaixo;</li>
+              <li>Digite o valor do item no teclado numérico;</li>
               <li>
                 Os botões
-                <span class="cart-empty-key-helper grphn-icon">
+                <span class="cart-empty-key-helper grphn-icon" title="Mais">
                   plus
                 </span>
                 e
-                <span class="cart-empty-key-helper grphn-icon">
+                <span class="cart-empty-key-helper grphn-icon" title="Menos">
                   minus
                 </span>
-                definem as unidades, mínimo de 1 un;
+                definem a quantidade;
               </li>
               <li>
-                Se preferir, defina um nome para este item tocando em "nome do
-                item";
+                Você também pode escrever o nome do produto usando o campo "nome do item";
               </li>
               <li>
                 Toque no botão
-                <span class="cart-empty-key-helper grphn-icon">
+                <span class="cart-empty-key-helper grphn-icon" title="Adicionar à lista">
                   arrow_up
                 </span>
                 para adicionar na lista e pronto.
@@ -194,6 +192,24 @@ export default {
     },
     app_version() {
       return process.env.VUE_APP_VERSION;
+    },
+    app_version_prefix() {
+      return process.env.VUE_APP_VERSIONPREFIX;
+    },
+    app_copyright() {
+      return process.env.VUE_APP_COPYRIGHT;
+    },
+    app_title() {
+      return process.env.VUE_APP_TITLE;
+    },
+    app_developer() {
+      return process.env.VUE_APP_DEVELOPER;
+    },
+    app_owner() {
+      return process.env.VUE_APP_OWNER;
+    },
+    app_owner_url() {
+      return process.env.VUE_APP_OWNER_URL;
     }
   },
   methods: {
@@ -265,11 +281,11 @@ application {
 content {
   -webkit-overflow-scrolling: touch;
   overflow-y: scroll;
-  padding: var(--app-view-padding) 0;
+  padding: 0 0 var(--app-view-padding);
 
-  @supports (padding-top: env(safe-area-inset-top)) {
-    padding-top: calc(var(--app-view-padding) + env(safe-area-inset-top));
-  }
+  // @supports (padding-top: env(safe-area-inset-top)) {
+  //   padding-top: calc(var(--app-view-padding) + env(safe-area-inset-top));
+  // }
 
   &:after {
     content: "";
@@ -280,10 +296,12 @@ content {
 
   .heading {
     align-items: center;
+    background-color: var(--color-ui-background);
     display: flex;
     flex-direction: row;
     flex-shrink: 0;
-    margin: 0 var(--app-view-padding) rem(40px);
+    padding: 24px var(--app-view-padding) rem(40px);
+    z-index: 120;
 
     ._label {
       color: var(--color-text-heading);
@@ -299,10 +317,14 @@ content {
 
 .list-header {
   @include graphene-font-style-meta();
+  background: var(--color-ui-background);
   color: var(--color-text-placeholder);
-  padding: 0 var(--app-view-padding);
   font-weight: $graphene-font-weight-semibold;
+  padding: 8px var(--app-view-padding);
+  position: sticky;
   text-transform: uppercase;
+  top: 0;
+  z-index: 100;
 }
 
 .item-name {
