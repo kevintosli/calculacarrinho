@@ -16,10 +16,10 @@
         />
         <div class="message">
           Escaneie o código com a câmera do seu celular para acessar o
-          aplicativo.
+          aplicativo
         </div>
         <div class="submessage">
-          Este aplicativo foi desenvolvido para funcionar apenas em smartphones.
+          Este aplicativo foi desenvolvido para funcionar apenas em smartphones
         </div>
       </div>
     </template>
@@ -180,10 +180,11 @@ export default {
     ...mapGetters(["cart_list", "cart_list_updates", "isMobile"]),
     qr_desktop_options() {
       return {
-        scale: 6,
-        margin: 3,
+        scale: 6.5,
+        margin: 2,
         color: {
-          dark: "#000000cc"
+          dark: "#fff",
+          light: "#000"
         }
       };
     },
@@ -254,7 +255,7 @@ export default {
     }
   },
   mounted() {
-    document.title = "Calcula Carrinho";
+    document.title = this.app_title;
     window.addEventListener("resize", this.handleResize, { passive: true });
   },
   beforeDestroy() {
@@ -447,6 +448,7 @@ cartlist-controls {
 
 ._viewport_desktop {
   .qr_code {
+    border-radius: var(--ui-border-radius-regular);
     margin-bottom: rem(32px);
   }
   .submessage,
