@@ -1,0 +1,23 @@
+{
+  "name": "Meu Carrinho",
+  "short_name": "Meu Carrinho",
+  "start_url": "/calculacarrinho/",
+  "display": "standalone",
+  "background_color": "#2dae4b",
+  "theme_color": "#2dae4b",
+  "description": "Chega de esquecer itens da compra e surpresas no caixa do mercado. Conheça o app de listas de compras e mantenha tudo sob controle.",
+  "categories":["lifestyle","finance","utilities","food"],
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "img/icons/android-chrome-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "img/icons/android-chrome-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
