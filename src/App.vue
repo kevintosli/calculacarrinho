@@ -244,7 +244,7 @@ export default {
       this.overlay_clearshoppingcart = false;
     },
     handleResize() {
-      this.changeMobileView(window.innerWidth <= 425);
+      this.changeMobileView(window.innerWidth <= 440);
     }
   },
   created() {
