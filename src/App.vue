@@ -72,9 +72,8 @@
           </div>
 
           <div class="little-about-info text-center">
-            <p>{{ app_title }} v{{ app_version }}{{ app_version_prefix }}</p>
-            <p>Feito com ♥︎ por {{ app_developer }}</p>
-            <p>© Copyright {{ current_year }}</p>
+            <p>De coração brasileiro © Kevin Santos Lima {{ current_year }}</p>
+            <p>{{ app_title }} v{{ app_version }}</p>
           </div>
         </template>
 
@@ -236,17 +235,11 @@ export default {
     app_version() {
       return process.env.VUE_APP_VERSION;
     },
-    app_version_prefix() {
-      return process.env.VUE_APP_VERSIONPREFIX;
-    },
     current_year() {
       return new Date().getFullYear();
     },
     app_title() {
       return process.env.VUE_APP_TITLE;
-    },
-    app_developer() {
-      return process.env.VUE_APP_DEVELOPER;
     }
   },
   methods: {
