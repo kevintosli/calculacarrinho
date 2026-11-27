@@ -22,12 +22,7 @@
     </div>
     <div class="item-un">{{ units }}</div>
     <div class="item-price">
-      {{
-        Number(price).toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL"
-        })
-      }}
+      {{ price_label }}
     </div>
     <hr class="__separator absolute pin-t" />
   </cartlist-item>
@@ -35,6 +30,7 @@
 
 <script>
 import { mapActions } from "vuex";
+import { format_brl } from "@js/currency";
 
 export default {
   name: "ListItem",
@@ -45,7 +41,7 @@ export default {
       default: 1
     },
     price: {
-      type: String,
+      type: Number,
       required: true
     },
     selected: {
@@ -54,8 +50,13 @@ export default {
     },
     itemIndex: Number
   },
+  computed: {
+    price_label() {
+      return format_brl(this.price);
+    }
+  },
   methods: {
-    ...mapActions(["cart_select", "cart_remove"]),
+    ...mapActions(["cart_select"]),
     select_item() {
       this.cart_select(this.itemIndex);
     }

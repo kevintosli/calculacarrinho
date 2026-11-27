@@ -2,8 +2,8 @@
 // http://bit.ly/graphenedesign
 // Typography tokens and styles
 
-// Font import from Google Fonts
-@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700&display=swap");
+// Source Sans Pro is loaded from Google Fonts in public/index.html
+// (a <link> there starts the download sooner than a CSS @import)
 
 $__fonts-alt: "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
 $__font-family: "Source Sans Pro";

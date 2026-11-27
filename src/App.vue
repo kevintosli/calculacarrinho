@@ -72,18 +72,14 @@
 
           <CartList :list="cart_list" />
 
-          <cartlist-footer
-            class="flex-col flex-shrink-0"
-            :key="`${cart_list_updates}-${calc_list_total()}`"
-            ontouchstart
-          >
+          <cartlist-footer class="flex-col flex-shrink-0" ontouchstart>
             <cartlist-footer-item class="flex-row">
               <div class="__label">Itens no carrinho</div>
-              <div class="__value">{{ calc_list_units() }}un</div>
+              <div class="__value">{{ cart_units }}un</div>
             </cartlist-footer-item>
             <cartlist-footer-item class="flex-row">
               <div class="__label">Total da compra</div>
-              <div class="__value">{{ calc_list_total() }}</div>
+              <div class="__value">{{ cart_total_label }}</div>
             </cartlist-footer-item>
             <cartlist-controls class="flex-col">
               <cartlist-control
@@ -102,7 +98,7 @@
             <p>{{ app_title }} v{{ app_version }}{{ app_version_prefix }}</p>
             <p>Feito com ♥︎ por {{ app_developer }}</p>
             <p>
-              {{ app_copyright }} · 
+              {{ app_copyright }} ·
               <a target="_blank" :href="app_owner_url">{{ app_owner }}</a>
             </p>
           </div>
@@ -121,7 +117,14 @@
               aria-hidden="true"
             >
               <!-- floor -->
-              <line class="_soft" x1="20" y1="108" x2="140" y2="108" stroke-width="2" />
+              <line
+                class="_soft"
+                x1="20"
+                y1="108"
+                x2="140"
+                y2="108"
+                stroke-width="2"
+              />
               <!-- price tag floating above the cart -->
               <g class="_tag">
                 <path
@@ -129,8 +132,22 @@
                   d="M92 14h22a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4H92l-9-11z"
                 />
                 <circle class="_bg-fill" cx="91" cy="25" r="2.2" />
-                <line class="_bg-stroke" x1="98" y1="22" x2="111" y2="22" stroke-width="2.4" />
-                <line class="_bg-stroke" x1="98" y1="28" x2="106" y2="28" stroke-width="2.4" />
+                <line
+                  class="_bg-stroke"
+                  x1="98"
+                  y1="22"
+                  x2="111"
+                  y2="22"
+                  stroke-width="2.4"
+                />
+                <line
+                  class="_bg-stroke"
+                  x1="98"
+                  y1="28"
+                  x2="106"
+                  y2="28"
+                  stroke-width="2.4"
+                />
               </g>
               <!-- dashed drop path -->
               <path
@@ -200,16 +217,21 @@
 <script>
 import { no_return } from "@js/utils";
 import { mapGetters, mapMutations } from "vuex";
-import QRCode from "@chenfengyuan/vue-qrcode";
+import { format_brl } from "@js/currency";
+import CartList from "@components/CartList";
+import CalcControls from "@components/CalcControls";
+import Notifications from "@components/Notifications";
+import Overlay from "@components/Overlay";
 
 export default {
   name: "app",
   components: {
-    CartList: () => import("@components/CartList"),
-    CalcControls: () => import("@components/CalcControls"),
-    Notifications: () => import("@components/Notifications"),
-    Overlay: () => import("@components/Overlay"),
-    QRCode
+    CartList,
+    CalcControls,
+    Notifications,
+    Overlay,
+    // Only the desktop screen needs the QR code library: load it on demand
+    QRCode: () => import("@chenfengyuan/vue-qrcode")
   },
   data() {
     return {
@@ -217,14 +239,11 @@ export default {
       overlay_was_app_updated: true
     };
   },
-  watch: {
-    cart_list_updates() {
-      this.calc_list_units();
-      this.calc_list_total();
-    }
-  },
   computed: {
-    ...mapGetters(["cart_list", "cart_list_updates", "isMobile"]),
+    ...mapGetters(["cart_list", "cart_units", "cart_total", "isMobile"]),
+    cart_total_label() {
+      return format_brl(this.cart_total);
+    },
     qr_desktop_options() {
       return {
         scale: 6.5,
@@ -267,30 +286,20 @@ export default {
       "cart_unselect_all",
       "cart_list_reset"
     ]),
-    calc_list_units() {
-      let sum = 0;
-      this.cart_list.forEach(item => {
-        sum += item.units;
-      });
-      return sum;
-    },
-    calc_list_total() {
-      let sum = 0;
-      this.cart_list.forEach(item => {
-        const item_sum = item.price * item.units;
-        sum += item_sum;
-      });
-      return sum.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-      });
-    },
     clear_shoppingcart() {
       this.cart_unselect_all();
       this.cart_list_reset();
       this.overlay_clearshoppingcart = false;
     },
     handleResize() {
+      // Coalesce resize bursts (rotation, keyboard) into one check per frame
+      if (this.resize_frame) return;
+      this.resize_frame = window.requestAnimationFrame(() => {
+        this.resize_frame = null;
+        this.updateMobileView();
+      });
+    },
+    updateMobileView() {
       // Treat any touch-first device whose shorter side is phone-sized as
       // mobile, regardless of orientation or how wide newer phones get.
       const coarsePointer =
@@ -303,10 +312,8 @@ export default {
   },
   created() {
     document.title = "Carregando...";
-    this.handleResize();
-    if (this.iOSDevice) {
-      document.querySelector("body").classList.add("iOS");
-    }
+    this.resize_frame = null;
+    this.updateMobileView();
   },
   mounted() {
     document.title = this.app_title;
@@ -314,6 +321,7 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.handleResize, { passive: true });
+    window.cancelAnimationFrame(this.resize_frame);
   }
 };
 </script>

@@ -36,12 +36,7 @@
           }
         ]"
       >
-        {{
-          Number(input_price.value).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL"
-          })
-        }}
+        {{ input_price_label }}
       </div>
     </div>
     <div class="calc-controls" ontouchstart="">
@@ -158,6 +153,7 @@
 <script>
 import { no_return } from "@js/utils";
 import { mapMutations, mapGetters, mapActions } from "vuex";
+import { format_brl } from "@js/currency";
 
 export default {
   name: "CalcControls",
@@ -183,8 +179,7 @@ export default {
           }
         },
         backspace: () => {
-          if (this.input_price.value == 0)
-            return window.console.log("Não pode apagar mais");
+          if (this.input_price.value == 0) return;
 
           let VALUE = this.input_price.value;
           VALUE = String(VALUE)
@@ -225,6 +220,9 @@ export default {
   },
   computed: {
     ...mapGetters(["cart_list_selected"]),
+    input_price_label() {
+      return format_brl(this.input_price.value);
+    },
     is_initial_input_name() {
       return this.input_name.value === "";
     },

@@ -22,6 +22,10 @@ module.exports = {
     }
   },
   chainWebpack: config => {
+    // Don't prefetch lazy chunks: the only one is the desktop QR code,
+    // which phones never need
+    config.plugins.delete("prefetch");
+
     const svgRule = config.module.rule("svg");
     svgRule.uses.clear();
     svgRule.use("vue-svg-loader").loader("vue-svg-loader");
