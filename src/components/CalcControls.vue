@@ -6,77 +6,69 @@
     ]"
     @dblclick="no_return"
   >
-    <div v-if="editing" class="calc-status _editing flex-row">
-      <div class="_label">
-        Editando
-        <strong>{{ cart_list_selected.name || "produto sem nome" }}</strong>
-      </div>
-      <button type="button" class="_action" @click="cart_unselect_all">
-        Cancelar
-      </button>
-    </div>
-    <div v-else-if="cart_units" class="calc-status flex-row">
-      <div class="_label">
-        {{ cart_units }} {{ cart_units === 1 ? "produto" : "produtos" }} no
-        carrinho
-      </div>
-      <div class="_value">{{ cart_total_label }}</div>
-    </div>
-
-    <div class="calc-header flex-row">
-      <div
-        :class="[
-          'item-name',
-          {
-            '_initial-value': !input_name.value
-          }
-        ]"
+    <!-- Cancel / product field / confirm -->
+    <div class="calc-actions">
+      <button
+        type="button"
+        class="tq-round-button"
+        :aria-label="editing ? 'Cancelar edição' : 'Limpar valores digitados'"
+        :title="editing ? 'Cancelar edição' : 'Limpar'"
+        @click="close_action"
       >
-        <label class="calc-caption" for="calc-item-name">
-          Produto <span class="_optional">(opcional)</span>
-        </label>
-        <form autocomplete="false" action="#" @submit.prevent="input_get_blur">
+        <span class="ms" aria-hidden="true">close</span>
+      </button>
+
+      <div class="calc-field">
+        <button
+          type="button"
+          class="_keyboard"
+          aria-label="Digitar o nome do produto"
+          title="Digitar o nome do produto"
+          @click="focus_name"
+        >
+          <span class="ms" aria-hidden="true">keyboard</span>
+        </button>
+        <form
+          class="_name"
+          autocomplete="off"
+          action="#"
+          @submit.prevent="input_get_blur"
+        >
           <input
+            id="calc-item-name"
+            ref="item_name"
             class="_name-input"
             type="text"
-            id="calc-item-name"
             name="product"
-            ref="item_name"
             v-model="input_name.value"
-            placeholder="Nome do produto"
+            aria-label="Nome do produto (opcional)"
             enterkeyhint="done"
             autocomplete="off"
             @focus="input_focus"
             @blur="input_blur"
           />
         </form>
-      </div>
-      <div class="item-un flex-shrink-0">
-        <div class="calc-caption">Qtd.</div>
-        <div aria-live="polite">{{ input_units.value }}</div>
-      </div>
-      <div
-        :class="[
-          'item-price',
-          {
-            '_initial-value': is_initial_input_price
-          }
-        ]"
-      >
-        <div class="calc-caption">
-          {{ input_units.value > 1 ? "Preço un." : "Preço" }}
+        <div
+          :class="['_price', { _empty: is_initial_input_price }]"
+          aria-live="polite"
+        >
+          <span>R$</span>
+          <span>{{ input_amount_label }}</span>
         </div>
-        <div aria-live="polite">{{ input_price_label }}</div>
       </div>
+
+      <button
+        type="button"
+        class="tq-round-button"
+        :aria-label="editing ? 'Salvar alterações' : 'Adicionar ao carrinho'"
+        :title="editing ? 'Salvar alterações' : 'Adicionar ao carrinho'"
+        @click="confirm_action"
+      >
+        <span class="ms" aria-hidden="true">check</span>
+      </button>
     </div>
-    <div
-      v-if="input_units.value > 1 && !is_initial_input_price"
-      class="calc-subtotal"
-    >
-      {{ input_units.value }} × {{ input_price_label }} =
-      <strong>{{ input_subtotal_label }}</strong>
-    </div>
-    <!-- Hidden while the phone keyboard is open for the item name -->
+
+    <!-- Hidden while the phone keyboard is open for the product name -->
     <transition
       :css="false"
       @before-enter="keypad_before_enter"
@@ -87,136 +79,72 @@
       @after-leave="keypad_after"
     >
       <div v-show="!input_name.focus" class="calc-keypad">
-        <div class="calc-controls" ontouchstart="">
-          <!-- Interaction -->
-          <div class="calc-key" style="grid-area: add;">
-            <div
-              :class="[
-                'calc-inner-key grphn-icon __accent',
-                { _invisible: editing }
-              ]"
-              key="add"
-              role="button"
-              aria-label="Adicionar ao carrinho"
-              title="Adicionar ao carrinho"
-              @click="add_to_list"
-            >
-              arrow_up
+        <div class="calc-pad" ontouchstart="">
+          <div class="calc-grid">
+            <!-- Quantity: right column, all four rows -->
+            <div class="calc-stepper" role="group" aria-label="Quantidade">
+              <button
+                type="button"
+                class="calc-key _step"
+                aria-label="Aumentar quantidade"
+                title="Aumentar quantidade"
+                @click="input_units.add(1)"
+              >
+                <span class="ms" aria-hidden="true">keyboard_arrow_up</span>
+              </button>
+              <span class="_units" aria-live="polite">
+                {{ input_units.value }}
+              </span>
+              <button
+                type="button"
+                :class="['calc-key _step', { _muted: is_initial_input_units }]"
+                aria-label="Diminuir quantidade"
+                title="Diminuir quantidade"
+                @click="input_units.remove(1)"
+              >
+                <span class="ms" aria-hidden="true">keyboard_arrow_down</span>
+              </button>
             </div>
-            <div
-              :class="[
-                'calc-inner-key grphn-icon __accent',
-                { _invisible: !editing }
-              ]"
-              key="save"
-              role="button"
-              aria-label="Salvar alterações"
-              title="Salvar alterações"
-              @click="update_to_list"
+
+            <button
+              v-for="digit in [7, 8, 9, 4, 5, 6, 1, 2, 3]"
+              :key="digit"
+              type="button"
+              class="calc-key _digit"
+              @click="input_price.update(digit)"
             >
-              checkmark
-            </div>
-          </div>
-          <div
-            class="calc-key"
-            style="grid-area: plus;"
-            title="Aumentar quantidade"
-            @click="input_units.add(1)"
-          >
-            <div
-              class="calc-inner-key grphn-icon __accent"
-              role="button"
-              aria-label="Aumentar quantidade"
-            >
-              plus
-            </div>
-          </div>
-          <div
-            class="calc-key"
-            style="grid-area: minus;"
-            title="Diminuir quantidade"
-            @click="input_units.remove(1)"
-          >
-            <div
-              class="calc-inner-key grphn-icon __accent"
-              role="button"
-              aria-label="Diminuir quantidade"
-            >
-              minus
-            </div>
-          </div>
-          <div class="calc-key" style="grid-area: reset;">
-            <div
-              v-if="!editing"
-              class="calc-inner-key __accent"
-              role="button"
-              aria-label="Limpar valores digitados"
-              title="Limpar valores digitados"
-              @click="reset_controls"
-            >
-              {{
-                is_initial_input_units &&
-                is_initial_input_price &&
-                is_initial_input_name
-                  ? "AC"
-                  : "C"
-              }}
-            </div>
-            <div
-              v-else
-              class="calc-inner-key grphn-icon __delete"
-              role="button"
+              {{ digit }}
+            </button>
+
+            <button
+              v-if="editing"
+              type="button"
+              class="calc-key _delete"
               aria-label="Remover produto do carrinho"
               title="Remover produto do carrinho"
               @click="remove_from_list"
             >
-              trashcan
-            </div>
-          </div>
-          <!-- Numbers -->
-          <div class="calc-key" style="grid-area: r3c1;">
-            <div class="calc-inner-key" @click="input_price.update(1)">1</div>
-          </div>
-          <div class="calc-key" style="grid-area: r3c2;">
-            <div class="calc-inner-key" @click="input_price.update(2)">2</div>
-          </div>
-          <div class="calc-key" style="grid-area: r3c3;">
-            <div class="calc-inner-key" @click="input_price.update(3)">3</div>
-          </div>
-          <div class="calc-key" style="grid-area: r2c1;">
-            <div class="calc-inner-key" @click="input_price.update(4)">4</div>
-          </div>
-          <div class="calc-key" style="grid-area: r2c2;">
-            <div class="calc-inner-key" @click="input_price.update(5)">5</div>
-          </div>
-          <div class="calc-key" style="grid-area: r2c3;">
-            <div class="calc-inner-key" @click="input_price.update(6)">6</div>
-          </div>
-          <div class="calc-key" style="grid-area: r1c1;">
-            <div class="calc-inner-key" @click="input_price.update(7)">7</div>
-          </div>
-          <div class="calc-key" style="grid-area: r1c2;">
-            <div class="calc-inner-key" @click="input_price.update(8)">8</div>
-          </div>
-          <div class="calc-key" style="grid-area: r1c3;">
-            <div class="calc-inner-key" @click="input_price.update(9)">9</div>
-          </div>
-          <div class="calc-key __key-zero" style="grid-area: zero;">
-            <div class="calc-inner-key" @click="input_price.update(0)">
-              <div class="__key-zero-1" style="grid-area: key1;">0</div>
-              <div class="__key-zero-2" style="grid-area: key2;">0</div>
-            </div>
-          </div>
-          <div class="calc-key" style="grid-area: erase;">
-            <div
-              :class="['calc-inner-key grphn-icon']"
-              role="button"
+              <span class="ms" aria-hidden="true">delete</span>
+            </button>
+            <span v-else class="calc-key _digit _muted" aria-hidden="true">
+              ·
+            </span>
+            <button
+              type="button"
+              class="calc-key _digit"
+              @click="input_price.update(0)"
+            >
+              0
+            </button>
+            <button
+              type="button"
+              :class="['calc-key', { _muted: is_initial_input_price }]"
               aria-label="Apagar último dígito"
               title="Apagar último dígito"
               @click="input_price.backspace"
             >
-              delete_left
-            </div>
+              <span class="ms" aria-hidden="true">backspace</span>
+            </button>
           </div>
         </div>
       </div>
@@ -227,7 +155,7 @@
 <script>
 import { no_return } from "@js/utils";
 import { mapMutations, mapGetters, mapActions } from "vuex";
-import { format_brl } from "@js/currency";
+import { format_amount } from "@js/currency";
 
 export default {
   name: "CalcControls",
@@ -304,15 +232,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["cart_list_selected", "cart_units", "cart_total"]),
-    input_price_label() {
-      return format_brl(this.input_price.value);
-    },
-    input_subtotal_label() {
-      return format_brl(this.input_price.value * this.input_units.value);
-    },
-    cart_total_label() {
-      return format_brl(this.cart_total);
+    ...mapGetters(["cart_list_selected"]),
+    input_amount_label() {
+      return format_amount(this.input_price.value);
     },
     is_initial_input_name() {
       return this.input_name.value === "";
@@ -390,6 +312,25 @@ export default {
     no_return,
     ...mapMutations(["cart_add", "cart_unselect_all", "notify"]),
     ...mapActions(["cart_update", "cart_remove"]),
+    // ✕: cancel the edit, or clear what was typed
+    close_action() {
+      if (this.editing) {
+        this.cart_unselect_all();
+      } else {
+        this.reset_controls();
+      }
+    },
+    // ✓: save the edit, or add a new product
+    confirm_action() {
+      if (this.editing) {
+        this.update_to_list();
+      } else {
+        this.add_to_list();
+      }
+    },
+    focus_name() {
+      this.$refs.item_name.focus();
+    },
     add_to_list() {
       if (this.is_initial_input_price) {
         this.notify({
@@ -463,268 +404,227 @@ export default {
 @import "@scss/variables";
 
 .calc-controls-wrapper {
-  background-color: var(--color-ui-background);
-  box-shadow: inset 0 rem(1px) 0 var(--color-ui-separator);
+  display: flex;
+  flex-direction: column;
+  gap: rem(16px);
+  padding: rem(8px) rem(24px) rem(24px);
+  position: relative;
   z-index: 100;
 
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    padding-bottom: calc(var(--app-view-padding) + env(safe-area-inset-bottom));
-
-    @media (max-width: 414px) and (min-height: 896px) {
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-    @media (max-width: 375px) and (min-height: 812px) {
-      padding-bottom: env(safe-area-inset-bottom);
-    }
+    padding-bottom: calc(#{rem(16px)} + env(safe-area-inset-bottom));
   }
 
-  transition: padding-bottom 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
+  // Soft dimming towards the bottom of the screen, as in the design
+  &::before {
+    background: linear-gradient(to bottom, transparent, var(--tq-dim));
+    bottom: 0;
+    content: "";
+    height: rem(371px);
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    z-index: -1;
   }
 
-  // Keypad hidden while typing the name: keep the safe-area padding only
-  &._typing {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+  button {
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    background: none;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    padding: 0;
+    touch-action: manipulation;
   }
-
-  &._editing {
-    --color-ui-background: var(--color-ui-background-secondary);
-    // box-shadow: inset 0 rem(3px) 0 var(--color-ui-accent);
+  button:focus-visible {
+    outline: rem(2px) solid var(--tq-fg);
+    outline-offset: rem(2px);
   }
+}
 
-  .calc-status {
+.calc-actions {
+  align-items: center;
+  display: flex;
+  gap: rem(12px);
+  padding: 0 rem(8px);
+
+  .tq-round-button {
     align-items: center;
-    background-color: var(--color-ui-listalt);
-    color: var(--color-text-description);
-    gap: rem(12px);
-    min-height: rem(40px);
-    padding: 0 calc(var(--app-view-padding) + #{rem(4px)});
-    @include graphene-font-style-label();
+    background-color: var(--tq-card);
+    border-radius: 50%;
+    box-shadow: var(--tq-shadow);
+    color: var(--tq-fg);
+    display: flex;
+    flex-shrink: 0;
+    height: rem(56px);
+    justify-content: center;
+    transition: transform 120ms ease;
+    width: rem(56px);
 
-    ._label {
-      flex-grow: 1;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-
-      strong {
-        color: var(--color-text-heading);
-        font-weight: $graphene-font-weight-semibold;
-      }
+    .ms {
+      font-variation-settings: "FILL" 0, "wght" 280, "GRAD" 150, "opsz" 28;
     }
-    ._value {
-      color: var(--color-text-heading);
-      flex-shrink: 0;
-      font-variant-numeric: tabular-nums;
-      font-weight: $graphene-font-weight-semibold;
-    }
-    ._action {
-      -webkit-appearance: none;
-      background-color: var(--color-ui-separator);
-      border: 0;
-      border-radius: var(--ui-border-radius-circular);
-      color: var(--color-text-heading);
-      cursor: pointer;
-      flex-shrink: 0;
-      font: inherit;
-      font-weight: $graphene-font-weight-semibold;
-      padding: rem(4px) rem(14px);
-    }
-    // White in both themes, so its colors are fixed rather than themed
-    &._editing {
-      background-color: #fff;
-      box-shadow: inset 0 rem(1px) 0 rgba(0, 0, 0, 0.12);
-      color: rgba(0, 0, 0, 0.64);
-
-      ._label strong {
-        color: #000;
-      }
-      ._action {
-        background-color: #000;
-        color: #fff;
-      }
+    &:active {
+      transform: scale(0.94);
     }
   }
+}
 
-  .calc-caption {
-    color: var(--color-text-placeholder);
-    display: block;
-    @include graphene-font-style-meta();
-    font-weight: $graphene-font-weight-semibold;
-    letter-spacing: 0.04em;
-    line-height: rem(16px);
-    text-transform: uppercase;
+.calc-field {
+  align-items: center;
+  background-color: var(--tq-card);
+  border-radius: var(--tq-radius-panel);
+  box-shadow: var(--tq-shadow);
+  display: flex;
+  flex: 1 1 0;
+  gap: rem(4px);
+  min-width: 0;
+  padding: rem(4px);
 
-    ._optional {
-      font-weight: $graphene-font-weight-regular;
-      text-transform: none;
+  ._keyboard {
+    align-items: center;
+    border-radius: 50%;
+    color: var(--tq-fg);
+    display: flex;
+    flex-shrink: 0;
+    height: rem(48px);
+    justify-content: center;
+    width: rem(48px);
+
+    .ms {
+      font-variation-settings: "FILL" 0, "wght" 280, "GRAD" -50, "opsz" 28;
+    }
+    &:active {
+      background-color: var(--tq-holo);
     }
   }
+  ._name {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  ._name-input {
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--tq-fg);
+    font: inherit;
+    font-size: rem(16px);
+    line-height: 1.6;
+    outline: none;
+    padding: 0;
+    text-overflow: ellipsis;
+    width: 100%;
 
-  .calc-subtotal {
-    color: var(--color-text-description);
-    margin-top: rem(-8px);
-    padding: 0 calc(var(--app-view-padding) + #{rem(4px)}) rem(8px);
-    text-align: right;
+    &::placeholder {
+      color: var(--tq-fg-disabled);
+    }
+  }
+  ._price {
+    color: var(--tq-fg);
+    display: flex;
+    flex-shrink: 0;
+    font-size: rem(16px);
     font-variant-numeric: tabular-nums;
-    @include graphene-font-style-label();
+    gap: rem(4px);
+    line-height: 1.6;
+    padding: 0 rem(8px);
+    white-space: nowrap;
 
-    strong {
-      color: var(--color-text-heading);
-      font-weight: $graphene-font-weight-semibold;
+    &._empty {
+      color: var(--tq-fg-disabled);
     }
   }
+}
 
-  .calc-header {
-    color: var(--color-text-heading);
-    padding: rem(8px) calc(var(--app-view-padding) + #{rem(4px)});
-    font-weight: $graphene-font-weight-semibold;
+.calc-pad {
+  background-color: var(--tq-card);
+  border-radius: var(--tq-radius-panel);
+  box-shadow: var(--tq-shadow);
+  margin: rem(1px);
+  padding: rem(12px);
+}
 
-    @media (max-height: 568px) {
-      @include graphene-font-style-paragraph();
-      font-weight: $graphene-font-weight-semibold;
-      line-height: rem(36px);
-    }
-    @media (min-height: 569px) {
-      @include graphene-font-style-interest();
-      font-size: rem(18px);
-      padding: {
-        bottom: rem(16px);
-        top: rem(16px);
-      }
-    }
+.calc-grid {
+  --key-height: #{rem(48px)};
+  display: grid;
+  gap: rem(8px);
+  grid-template-columns: repeat(3, minmax(0, 1fr)) rem(48px);
+  grid-template-rows: repeat(4, var(--key-height));
 
-    ._initial-value {
-      color: var(--color-text-placeholder);
-    }
-    ._name-input {
-      -webkit-box-shadow: inset 0 0 0 999px var(--color-ui-background) !important;
-      color: var(--color-text-heading);
-      width: 100%;
-
-      &::placeholder {
-        color: var(--color-text-placeholder);
-      }
-    }
-    .item-name,
-    .item-un,
-    .item-price {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+  @media (max-height: 640px) {
+    --key-height: #{rem(40px)};
   }
+}
 
-  .calc-controls {
-    border-radius: var(--app-view-padding);
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr;
-    grid-template-areas:
-      "r1c1 r1c2 r1c3 reset"
-      "r2c1 r2c2 r2c3 plus"
-      "r3c1 r3c2 r3c3 minus"
-      "zero zero erase add";
-    grid-gap: rem(2px);
-    margin: 0 var(--app-view-padding);
-    overflow: hidden;
-    transform: translate3d(0, 0, 0);
+.calc-key {
+  align-items: center;
+  border-radius: rem(9999px);
+  color: var(--tq-fg);
+  display: flex;
+  justify-content: center;
+  transition: background-color 120ms ease;
 
-    .calc-key {
-      font-size: $graphene-font-size-interest;
-      font-weight: $graphene-font-weight-regular;
-      min-height: rem(48px);
-      position: relative;
-      transform: translate3d(0, 0, 0);
+  &:active {
+    background-color: var(--tq-holo);
+  }
+  &._digit {
+    font-family: "Roboto Flex", $graphene-font-family;
+    font-size: rem(20px);
+    font-variant-numeric: tabular-nums;
+  }
+  &._muted {
+    color: var(--tq-fg-disabled);
+  }
+  &._delete {
+    color: var(--tq-destructive);
+  }
+  .ms {
+    font-variation-settings: "FILL" 0, "wght" 280, "GRAD" 0, "opsz" 28;
+  }
+}
 
-      @media (max-height: 568px) {
-        @include graphene-font-style-interest();
-        font-weight: $graphene-font-weight-regular;
-      }
-      @media (min-height: 569px) {
-        @include graphene-font-style-subheading();
-        min-height: rem(64px);
-        font-weight: $graphene-font-weight-regular;
-      }
+.calc-stepper {
+  align-items: center;
+  background-color: var(--tq-holo);
+  border-radius: rem(9999px);
+  display: flex;
+  flex-direction: column;
+  grid-column: 4;
+  grid-row: 1 / span 4;
+  justify-content: space-between;
+  padding: 0 rem(4px);
 
-      .calc-inner-key {
-        align-items: center;
-        background-color: var(--color-ui-separator);
-        bottom: 0;
-        display: inline-flex;
-        justify-content: center;
-        left: 0;
-        right: 0;
-        position: absolute;
-        top: 0;
-        transform: translate3d(0, 0, 0);
-        transition-property: background-color;
-        transition-duration: var(--motion-duration-regular);
-        transition-timing-function: linear;
+  ._step {
+    height: rem(44px);
+    width: 100%;
+  }
+  ._units {
+    color: var(--tq-fg);
+    font-family: "Roboto Flex", $graphene-font-family;
+    font-size: rem(16px);
+    font-variant-numeric: tabular-nums;
+  }
+}
 
-        &:not(._disabled):hover:active {
-          background-color: var(--color-text-placeholder);
-          transition-duration: 0ms;
-        }
-        &._invisible {
-          position: absolute;
-          visibility: hidden;
-        }
-        &:not(._invisible) {
-          animation: pulse;
-          animation-duration: var(--motion-duration-regular);
-          animation-iteration-count: 1;
-          animation-play-state: running;
-          font-size: inherit;
-          visibility: visible;
-
-          @keyframes pulse {
-            from {
-              font-size: rem(32px);
-            }
-            to {
-              font-size: rem(24px);
-            }
-          }
-        }
-        &.__accent {
-          background-color: var(--color-ui-accent);
-          color: var(--color-ui-background);
-
-          &:not(._disabled):hover:active {
-            background-color: var(--color-text-heading);
-          }
-        }
-        &.__delete {
-          background-color: var(--color-ui-delete);
-          color: var(--color-ui-background);
-
-          &:not(._disabled):hover:active {
-            background-color: var(--color-text-heading);
-          }
-        }
-      }
-    }
-
-    .__key-zero {
-      display: inline-grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template: "key1 key2";
-      grid-gap: rem(8px);
-      justify-content: stretch;
-
-      div {
-        flex-grow: 1;
-        text-align: center;
-        width: 100%;
-      }
-      .__key-zero-2 {
-        color: transparent;
-      }
-    }
+@media (max-height: 640px) {
+  .calc-controls-wrapper {
+    gap: rem(12px);
+    padding-left: rem(16px);
+    padding-right: rem(16px);
+  }
+  .calc-actions .tq-round-button {
+    height: rem(48px);
+    width: rem(48px);
+  }
+  .calc-field ._keyboard {
+    height: rem(40px);
+    width: rem(40px);
+  }
+  .calc-stepper ._step {
+    height: rem(36px);
   }
 }
 </style>

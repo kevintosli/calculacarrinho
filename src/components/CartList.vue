@@ -1,6 +1,6 @@
 <template>
   <cartlist class="flex-col flex-shrink-0 relative">
-    <span>
+    <span class="_rows">
       <CartListItem
         v-for="(item, index) in list"
         :key="item.id"
@@ -30,3 +30,19 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+@import "@scss/_utils";
+
+cartlist {
+  background-color: var(--tq-card);
+  border-radius: var(--tq-radius-card);
+  margin: 0 var(--app-view-padding);
+  padding: rem(8px);
+
+  ._rows {
+    display: flex;
+    flex-direction: column;
+  }
+}
+</style>

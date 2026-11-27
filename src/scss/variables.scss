@@ -10,19 +10,37 @@ html {
   --ui-border-radius-regular: #{rem(3.6px)};
   --ui-border-radius-circular: #{rem(999px)};
 
-  // Colors
-  --color-text-heading: #{$graphene-color-black-700};
-  --color-text-paragraph: #{$graphene-color-black-600};
-  --color-text-description: #{$graphene-color-black-500};
-  --color-text-placeholder: #{$graphene-color-black-400};
-  --color-ui-accent: #{$color-ui-accent-400};
-  --color-ui-delete: #{$graphene-color-orange-400};
-  --color-ui-background: #{$graphene-color-white-200};
-  --color-ui-background-secondary: #{$graphene-color-gray-200};
-  --color-ui-separator: #{$graphene-color-black-200};
-  --color-ui-listalt: hsla(0, 0%, 0%, 0.03);
-  --color-ui-overlay: #{$graphene-color-black-300};
-  --color-ui-notification: #{$graphene-color-gray-500};
+  // Tá Quanto design tokens (Figma "TáQuanto"); light theme from the design
+  --tq-bg: #f4f4f5;
+  --tq-card: #fafafa;
+  --tq-glass: rgba(250, 250, 250, 0.8);
+  --tq-fg: rgba(9, 9, 11, 0.88);
+  --tq-fg-secondary: rgba(9, 9, 11, 0.64);
+  --tq-fg-disabled: rgba(9, 9, 11, 0.44);
+  --tq-on-accent: rgba(9, 9, 11, 0.88);
+  --tq-accent: #9ae600;
+  --tq-destructive: #c70036;
+  --tq-holo: rgba(9, 9, 11, 0.04);
+  --tq-stroke: rgba(9, 9, 11, 0.08);
+  --tq-dim: rgba(0, 0, 0, 0.1);
+  --tq-shadow: 0 0 1px 1px var(--tq-stroke), 0 0 20px 1px rgba(0, 0, 0, 0.12),
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.2);
+  --tq-radius-card: #{rem(24px)};
+  --tq-radius-panel: #{rem(44px)};
+
+  // Legacy names used across the app, mapped onto the tokens
+  --color-text-heading: var(--tq-fg);
+  --color-text-paragraph: var(--tq-fg);
+  --color-text-description: var(--tq-fg-secondary);
+  --color-text-placeholder: var(--tq-fg-disabled);
+  --color-ui-accent: var(--tq-accent);
+  --color-ui-delete: var(--tq-destructive);
+  --color-ui-background: var(--tq-bg);
+  --color-ui-background-secondary: var(--tq-card);
+  --color-ui-separator: var(--tq-stroke);
+  --color-ui-listalt: var(--tq-holo);
+  --color-ui-overlay: rgba(9, 9, 11, 0.4);
+  --color-ui-notification: rgba(9, 9, 11, 0.88);
 
   // Transitions
   --motion-duration-fast: 80ms;
@@ -30,18 +48,21 @@ html {
   --motion-duration-medium: 720ms;
   --motion-timing-ease_out: cubic-bezier(0, 0.9, 1, 1);
 
+  // Dark theme: not in the design, derived from the same zinc scale
   @media (prefers-color-scheme: dark) {
-    --color-text-heading: #{$graphene-color-white-200};
-    --color-text-paragraph: #{$graphene-color-white-200};
-    --color-text-description: #{$graphene-color-white-300};
-    --color-text-placeholder: #{$graphene-color-white-400};
-    --color-ui-accent: #{$color-ui-accent-300};
-    --color-ui-delete: #{$graphene-color-orange-300};
-    --color-ui-background: #{$graphene-color-black-700};
-    --color-ui-background-secondary: #{$graphene-color-gray-700};
-    --color-ui-separator: #{$graphene-color-white-600};
-    --color-ui-listalt: hsla(0, 0%, 100%, 0.05);
-    --color-ui-overlay: #{$graphene-color-black-500};
-    --color-ui-notification: #{$graphene-color-gray-400};
+    --tq-bg: #09090b;
+    --tq-card: #18181b;
+    --tq-glass: rgba(24, 24, 27, 0.8);
+    --tq-fg: rgba(250, 250, 250, 0.92);
+    --tq-fg-secondary: rgba(250, 250, 250, 0.64);
+    --tq-fg-disabled: rgba(250, 250, 250, 0.4);
+    --tq-destructive: #ff6467;
+    --tq-holo: rgba(255, 255, 255, 0.06);
+    --tq-stroke: rgba(255, 255, 255, 0.1);
+    --tq-dim: rgba(0, 0, 0, 0.4);
+    --tq-shadow: 0 0 1px 1px var(--tq-stroke), 0 0 20px 1px rgba(0, 0, 0, 0.5),
+      inset 0 0 1px 1px rgba(255, 255, 255, 0.04);
+    --color-ui-overlay: rgba(0, 0, 0, 0.6);
+    --color-ui-notification: rgba(250, 250, 250, 0.92);
   }
 }

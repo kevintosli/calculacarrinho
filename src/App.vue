@@ -46,22 +46,18 @@
         class="flex-col flex-grow-1 flex-shrink-1 relative"
       >
         <template v-if="cart_list.length">
-          <div class="heading">
-            <h1 class="_label text-center">Carrinho</h1>
-            <p class="_hint text-center">
-              Toque em um produto para editar ou remover
-            </p>
-            <!-- <div class="_icon grphn-icon">questionmark_circle</div> -->
-          </div>
-
-          <div class="list-header flex-row flex-shrink-0">
-            <div class="item-name">Produto</div>
-            <div class="item-un">Un</div>
-            <div class="item-price">Subtotal</div>
-            <div></div>
-          </div>
+          <header class="title-area">
+            <h1 class="_title">Carrinho</h1>
+            <div class="_subtotal" aria-live="polite">
+              <span class="_total">{{ cart_total_label }}</span>
+              <span class="_count">
+                {{ cart_units }} {{ cart_units === 1 ? "produto" : "produtos" }}
+              </span>
+            </div>
+          </header>
 
           <CartList :list="cart_list" />
+          <p class="list-hint">Toque em um produto para editar ou remover</p>
 
           <div class="cart-clear flex-row justify-center">
             <SwipeButton
@@ -156,17 +152,21 @@
               </li>
               <li>
                 <span class="_keys">
-                  <span class="key-helper grphn-icon" title="Mais">plus</span>
-                  <span class="key-helper grphn-icon" title="Menos">minus</span>
+                  <span class="key-helper ms" title="Mais"
+                    >keyboard_arrow_up</span
+                  >
+                  <span class="key-helper ms" title="Menos"
+                    >keyboard_arrow_down</span
+                  >
                 </span>
                 <span class="_text">Ajuste a quantidade</span>
               </li>
               <li>
                 <span class="_keys">
                   <span
-                    class="key-helper __accent grphn-icon"
-                    title="Adicionar à lista"
-                    >arrow_up</span
+                    class="key-helper __accent ms"
+                    title="Adicionar ao carrinho"
+                    >check</span
                   >
                 </span>
                 <span class="_text">Adicione ao carrinho</span>
@@ -184,6 +184,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from "vuex";
+import { format_brl } from "@js/currency";
 import CartList from "@components/CartList";
 import CalcControls from "@components/CalcControls";
 import Notifications from "@components/Notifications";
@@ -218,7 +219,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["cart_list", "isMobile"]),
+    ...mapGetters(["cart_list", "cart_units", "cart_total", "isMobile"]),
+    cart_total_label() {
+      return format_brl(this.cart_total);
+    },
     qr_desktop_options() {
       return {
         scale: 6.5,
@@ -294,7 +298,9 @@ export default {
 
 application {
   --app-view-padding: #{rem(20px)};
-  background-color: var(--color-ui-background);
+  // Soft dimming at the top of the screen, as in the design
+  background: linear-gradient(var(--tq-dim), transparent #{rem(146px)}),
+    var(--tq-bg);
   color: var(--color-text-paragraph);
   display: block;
   font-family: $graphene-font-family;
@@ -317,54 +323,75 @@ content {
     display: block;
     height: var(--app-view-padding);
   }
+}
 
-  .heading {
-    align-items: center;
-    background-color: var(--color-ui-background);
+.title-area {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: rem(12px);
+  justify-content: space-between;
+  padding: rem(16px) var(--app-view-padding);
+
+  @supports (padding-top: env(safe-area-inset-top)) {
+    padding-top: calc(#{rem(16px)} + env(safe-area-inset-top));
+  }
+
+  ._title {
+    color: var(--tq-fg);
+    font-feature-settings: "ss02" 1;
+    font-size: rem(34px);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  ._subtotal {
+    align-items: flex-end;
     display: flex;
     flex-direction: column;
-    gap: rem(4px);
-    flex-shrink: 0;
-    padding: 24px var(--app-view-padding) rem(24px);
-    z-index: 120;
-
-    ._label {
-      color: var(--color-text-heading);
-    }
-    ._hint {
-      color: var(--color-text-placeholder);
-      @include graphene-font-style-label();
-    }
-    ._icon {
-      color: var(--color-text-placeholder);
-      font-size: rem(24px);
-      justify-items: flex-end;
-    }
+    min-width: 0;
+    padding: 0 rem(4px);
+    text-align: right;
+  }
+  ._total {
+    color: var(--tq-fg);
+    font-size: rem(24px);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: rem(-4px);
+    white-space: nowrap;
+  }
+  ._count {
+    color: var(--tq-fg-secondary);
+    font-size: rem(14px);
+    line-height: 1.4;
   }
 }
 
-.list-header {
-  @include graphene-font-style-meta();
-  background: var(--color-ui-background);
-  color: var(--color-text-placeholder);
-  font-weight: $graphene-font-weight-semibold;
-  padding: 8px var(--app-view-padding);
-  position: sticky;
-  text-transform: uppercase;
-  top: 0;
-  z-index: 100;
+.list-hint {
+  color: var(--tq-fg-disabled);
+  font-size: rem(14px);
+  line-height: 1.4;
+  margin: rem(12px) var(--app-view-padding) 0;
+  text-align: center;
 }
 
-.item-name {
-  width: 56%;
-}
-.item-un {
-  text-align: center;
-  width: 8%;
-}
-.item-price {
-  text-align: right;
-  width: 36%;
+// Material Symbols (only the icons in public/index.html are loaded)
+.ms {
+  -webkit-font-smoothing: antialiased;
+  direction: ltr;
+  display: inline-block;
+  font-family: "Material Symbols Rounded";
+  font-feature-settings: "liga";
+  font-size: rem(28px);
+  font-style: normal;
+  font-variation-settings: "FILL" 0, "wght" 280, "GRAD" 0, "opsz" 28;
+  font-weight: normal;
+  letter-spacing: normal;
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
 }
 
 .cart-clear {
@@ -440,8 +467,8 @@ content {
 
     li {
       align-items: center;
-      background-color: var(--color-ui-listalt);
-      border-radius: rem(12px);
+      background-color: var(--tq-card);
+      border-radius: rem(16px);
       display: flex;
       gap: rem(14px);
       padding: rem(10px) rem(14px);
@@ -462,8 +489,9 @@ content {
 
   .key-helper {
     align-items: center;
-    background-color: var(--color-ui-separator);
-    border-radius: rem(6px);
+    background-color: var(--tq-holo);
+    border-radius: rem(9999px);
+    font-family: "Roboto Flex", $graphene-font-family;
     color: var(--color-text-heading);
     display: inline-flex;
     font-size: rem(15px);
@@ -471,9 +499,13 @@ content {
     justify-content: center;
     min-width: rem(28px);
 
+    &.ms {
+      font-family: "Material Symbols Rounded";
+      font-size: rem(20px);
+    }
     &.__accent {
-      background-color: var(--color-ui-accent);
-      color: var(--color-ui-background);
+      background-color: var(--tq-accent);
+      color: var(--tq-on-accent);
     }
   }
 }
