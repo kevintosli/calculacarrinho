@@ -72,7 +72,7 @@
           </div>
 
           <div class="little-about-info text-center">
-            <p>De coração brasileiro © Kevin Santos Lima {{ current_year }}</p>
+            <p>De coração brasileiro © Kevito {{ current_year }}</p>
             <p>{{ app_title }} v{{ app_version }}</p>
           </div>
         </template>
