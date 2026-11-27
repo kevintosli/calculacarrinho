@@ -71,7 +71,7 @@
             />
           </div>
 
-          <div class="little-about-info text-right">
+          <div class="little-about-info text-center">
             <p>{{ app_title }} v{{ app_version }}{{ app_version_prefix }}</p>
             <p>Feito com ♥︎ por {{ app_developer }}</p>
             <p>© Copyright {{ current_year }}</p>
