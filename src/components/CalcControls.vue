@@ -533,16 +533,18 @@ export default {
       font-weight: $graphene-font-weight-semibold;
       padding: rem(4px) rem(14px);
     }
+    // White in both themes, so its colors are fixed rather than themed
     &._editing {
-      background-color: var(--color-ui-accent);
-      color: var(--color-ui-background);
+      background-color: #fff;
+      box-shadow: inset 0 rem(1px) 0 rgba(0, 0, 0, 0.12);
+      color: rgba(0, 0, 0, 0.64);
 
       ._label strong {
-        color: inherit;
+        color: #000;
       }
       ._action {
-        background-color: var(--color-ui-background);
-        color: var(--color-text-heading);
+        background-color: #000;
+        color: #fff;
       }
     }
   }
