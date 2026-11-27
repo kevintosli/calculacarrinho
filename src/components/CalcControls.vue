@@ -3,6 +3,22 @@
     :class="['calc-controls-wrapper', { _editing: editing }]"
     @dblclick="no_return"
   >
+    <div v-if="editing" class="calc-status _editing flex-row">
+      <div class="_label">
+        Editando
+        <strong>{{ cart_list_selected.name || "item sem nome" }}</strong>
+      </div>
+      <button type="button" class="_action" @click="cart_unselect_all">
+        Cancelar
+      </button>
+    </div>
+    <div v-else-if="cart_units" class="calc-status flex-row">
+      <div class="_label">
+        {{ cart_units }} {{ cart_units === 1 ? "item" : "itens" }} no carrinho
+      </div>
+      <div class="_value">{{ cart_total_label }}</div>
+    </div>
+
     <div class="calc-header flex-row">
       <div
         :class="[
@@ -12,10 +28,14 @@
           }
         ]"
       >
+        <label class="calc-caption" for="calc-item-name">
+          Produto <span class="_optional">(opcional)</span>
+        </label>
         <form autocomplete="false" action="#" @submit.prevent="input_get_blur">
           <input
             class="_name-input"
             type="text"
+            id="calc-item-name"
             name="product"
             ref="item_name"
             v-model="input_name.value"
@@ -27,7 +47,10 @@
           />
         </form>
       </div>
-      <div class="item-un flex-shrink-0">{{ input_units.value }}</div>
+      <div class="item-un flex-shrink-0">
+        <div class="calc-caption">Qtd.</div>
+        <div aria-live="polite">{{ input_units.value }}</div>
+      </div>
       <div
         :class="[
           'item-price',
@@ -36,8 +59,18 @@
           }
         ]"
       >
-        {{ input_price_label }}
+        <div class="calc-caption">
+          {{ input_units.value > 1 ? "Preço un." : "Preço" }}
+        </div>
+        <div aria-live="polite">{{ input_price_label }}</div>
       </div>
+    </div>
+    <div
+      v-if="input_units.value > 1 && !is_initial_input_price"
+      class="calc-subtotal"
+    >
+      {{ input_units.value }} × {{ input_price_label }} =
+      <strong>{{ input_subtotal_label }}</strong>
     </div>
     <div class="calc-controls" ontouchstart="">
       <!-- Interaction -->
@@ -48,7 +81,9 @@
             { _invisible: editing }
           ]"
           key="add"
-          title="Adicionar à lista"
+          role="button"
+          aria-label="Adicionar ao carrinho"
+          title="Adicionar ao carrinho"
           @click="add_to_list"
         >
           arrow_up
@@ -59,6 +94,8 @@
             { _invisible: !editing }
           ]"
           key="save"
+          role="button"
+          aria-label="Salvar alterações"
           title="Salvar alterações"
           @click="update_to_list"
         >
@@ -71,7 +108,13 @@
         title="Aumentar quantidade"
         @click="input_units.add(1)"
       >
-        <div class="calc-inner-key grphn-icon __accent">plus</div>
+        <div
+          class="calc-inner-key grphn-icon __accent"
+          role="button"
+          aria-label="Aumentar quantidade"
+        >
+          plus
+        </div>
       </div>
       <div
         class="calc-key"
@@ -79,13 +122,21 @@
         title="Diminuir quantidade"
         @click="input_units.remove(1)"
       >
-        <div class="calc-inner-key grphn-icon __accent">minus</div>
+        <div
+          class="calc-inner-key grphn-icon __accent"
+          role="button"
+          aria-label="Diminuir quantidade"
+        >
+          minus
+        </div>
       </div>
       <div class="calc-key" style="grid-area: reset;">
         <div
           v-if="!editing"
           class="calc-inner-key __accent"
-          title="Limpar"
+          role="button"
+          aria-label="Limpar valores digitados"
+          title="Limpar valores digitados"
           @click="reset_controls"
         >
           {{
@@ -99,6 +150,9 @@
         <div
           v-else
           class="calc-inner-key grphn-icon __delete"
+          role="button"
+          aria-label="Remover item do carrinho"
+          title="Remover item do carrinho"
           @click="remove_from_list"
         >
           trashcan
@@ -141,6 +195,9 @@
       <div class="calc-key" style="grid-area: erase;">
         <div
           :class="['calc-inner-key grphn-icon']"
+          role="button"
+          aria-label="Apagar último dígito"
+          title="Apagar último dígito"
           @click="input_price.backspace"
         >
           delete_left
@@ -168,15 +225,20 @@ export default {
         value: "0.00",
         update: key_value => {
           if (key_value == "reset") return (this.input_price.value = "0.00");
-          if (Number(this.input_price.value) <= 1000) {
-            let VALUE = this.input_price.value;
-            VALUE = String(VALUE)
-              .replace(".", "") // Removing dot
-              .replace(/(\d*)/, `$1${key_value}`) // Adding pressed key to end
-              .replace(/(\d*)(\d{2})/, "$1.$2") // Adding dot again
-              .replace(/(0?)(\d+\.\d*)/g, "$2"); // Removing leading zero
-            this.input_price.value = VALUE;
+          if (Number(this.input_price.value) > 1000) {
+            return this.notify({
+              type: "alert",
+              description: "Esse é o maior preço que dá para digitar",
+              duration: 2500
+            });
           }
+          let VALUE = this.input_price.value;
+          VALUE = String(VALUE)
+            .replace(".", "") // Removing dot
+            .replace(/(\d*)/, `$1${key_value}`) // Adding pressed key to end
+            .replace(/(\d*)(\d{2})/, "$1.$2") // Adding dot again
+            .replace(/(0?)(\d+\.\d*)/g, "$2"); // Removing leading zero
+          this.input_price.value = VALUE;
         },
         backspace: () => {
           if (this.input_price.value == 0) return;
@@ -195,7 +257,13 @@ export default {
       input_units: {
         value: 1,
         add: quantity => {
-          if (this.input_units.value == 99) return false;
+          if (this.input_units.value == 99) {
+            return this.notify({
+              type: "alert",
+              description: "A quantidade máxima é 99",
+              duration: 2500
+            });
+          }
           this.input_units.value += quantity;
         },
         remove: quantity => {
@@ -219,9 +287,15 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["cart_list_selected"]),
+    ...mapGetters(["cart_list_selected", "cart_units", "cart_total"]),
     input_price_label() {
       return format_brl(this.input_price.value);
+    },
+    input_subtotal_label() {
+      return format_brl(this.input_price.value * this.input_units.value);
+    },
+    cart_total_label() {
+      return format_brl(this.cart_total);
     },
     is_initial_input_name() {
       return this.input_name.value === "";
@@ -235,20 +309,26 @@ export default {
   },
   methods: {
     no_return,
-    ...mapMutations(["cart_add", "notify"]),
+    ...mapMutations(["cart_add", "cart_unselect_all", "notify"]),
     ...mapActions(["cart_update", "cart_remove"]),
     add_to_list() {
       if (this.is_initial_input_price) {
         this.notify({
           type: "alert",
-          description: "Digite um valor para adicionar à lista",
+          description: "Digite o preço no teclado para adicionar",
           duration: 2000
         });
       } else {
+        const name = this.input_name.value.trim();
         this.cart_add({
-          name: this.input_name.value,
+          name,
           price: this.input_price.value,
           units: this.input_units.value
+        });
+        this.notify({
+          type: "success",
+          description: `${name || "Item"} adicionado ao carrinho`,
+          duration: 2000
         });
         this.reset_controls();
       }
@@ -322,6 +402,95 @@ export default {
   &._editing {
     --color-ui-background: var(--color-ui-background-secondary);
     // box-shadow: inset 0 rem(3px) 0 var(--color-ui-accent);
+  }
+
+  .calc-status {
+    align-items: center;
+    background-color: var(--color-ui-listalt);
+    color: var(--color-text-description);
+    gap: rem(12px);
+    min-height: rem(40px);
+    padding: 0 calc(var(--app-view-padding) + #{rem(4px)});
+    @include graphene-font-style-label();
+
+    ._label {
+      flex-grow: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      strong {
+        color: var(--color-text-heading);
+        font-weight: $graphene-font-weight-semibold;
+      }
+    }
+    ._value {
+      color: var(--color-text-heading);
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+      font-weight: $graphene-font-weight-semibold;
+    }
+    ._action {
+      -webkit-appearance: none;
+      background-color: var(--color-ui-separator);
+      border: 0;
+      border-radius: var(--ui-border-radius-circular);
+      color: var(--color-text-heading);
+      cursor: pointer;
+      flex-shrink: 0;
+      font: inherit;
+      font-weight: $graphene-font-weight-semibold;
+      padding: rem(4px) rem(14px);
+    }
+    &._editing {
+      background-color: var(--color-ui-accent);
+      color: var(--color-ui-background);
+
+      ._label strong {
+        color: inherit;
+      }
+      ._action {
+        background-color: var(--color-ui-background);
+        color: var(--color-text-heading);
+      }
+    }
+  }
+
+  // Very short screens: the running total is also at the end of the list
+  @media (max-height: 600px) {
+    .calc-status:not(._editing) {
+      display: none;
+    }
+  }
+
+  .calc-caption {
+    color: var(--color-text-placeholder);
+    display: block;
+    @include graphene-font-style-meta();
+    font-weight: $graphene-font-weight-semibold;
+    letter-spacing: 0.04em;
+    line-height: rem(16px);
+    text-transform: uppercase;
+
+    ._optional {
+      font-weight: $graphene-font-weight-regular;
+      text-transform: none;
+    }
+  }
+
+  .calc-subtotal {
+    color: var(--color-text-description);
+    margin-top: rem(-8px);
+    padding: 0 calc(var(--app-view-padding) + #{rem(4px)}) rem(8px);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    @include graphene-font-style-label();
+
+    strong {
+      color: var(--color-text-heading);
+      font-weight: $graphene-font-weight-semibold;
+    }
   }
 
   .calc-header {

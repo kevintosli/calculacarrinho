@@ -53,7 +53,8 @@ const PERSISTING_MUTATIONS = new Set([
   "cart_add",
   "cart_update_data",
   "cart_remove_item",
-  "cart_list_reset"
+  "cart_list_reset",
+  "cart_restore"
 ]);
 const persist = store => {
   store.subscribe(({ type }, state) => {
@@ -67,6 +68,8 @@ export default new Vuex.Store({
     cart_list: load_cart(),
     cart_list_selected: {},
     notification_list: [],
+    // What the last remove/clear took out, so it can be undone
+    cart_undo: null,
     isMobile: false
   },
   getters: {
@@ -107,18 +110,41 @@ export default new Vuex.Store({
     cart_list_reset(state) {
       state.cart_list = [];
     },
+    cart_set_undo(state, undo) {
+      state.cart_undo = undo;
+    },
+    cart_restore(state) {
+      const undo = state.cart_undo;
+      if (!undo) return;
+      if (undo.list) {
+        state.cart_list = undo.list;
+      } else {
+        state.cart_list.splice(
+          Math.min(undo.index, state.cart_list.length),
+          0,
+          undo.item
+        );
+      }
+      state.cart_undo = null;
+    },
     notify(state, payload) {
       clearTimeout(notification_timeout);
       state.notification_list = [
         {
           type: payload.type || "",
           description: payload.description,
-          duration: payload.duration
+          duration: payload.duration,
+          // Optional button, e.g. { label: "Desfazer", action: "cart_undo" }
+          button: payload.button || null
         }
       ];
       notification_timeout = setTimeout(() => {
         state.notification_list = [];
       }, payload.duration);
+    },
+    notification_clear(state) {
+      clearTimeout(notification_timeout);
+      state.notification_list = [];
     },
     changeMobileView(state, is_mobile) {
       if (state.isMobile !== is_mobile) state.isMobile = is_mobile;
@@ -142,11 +168,40 @@ export default new Vuex.Store({
       } else {
         commit("cart_update_data", { index, payload });
         commit("cart_unselect_all");
+        commit("notify", {
+          type: "success",
+          description: "Alterações salvas",
+          duration: 2000
+        });
       }
     },
-    cart_remove({ commit }, index) {
-      commit("cart_remove_item", index);
+    cart_remove({ state, commit }, index) {
+      const item = state.cart_list[index];
+      if (!item) return;
       commit("cart_unselect_all");
+      commit("cart_set_undo", { item, index });
+      commit("cart_remove_item", index);
+      commit("notify", {
+        type: "info",
+        description: `${item.name || "Item"} removido`,
+        duration: 5000,
+        button: { label: "Desfazer", action: "cart_undo" }
+      });
+    },
+    cart_clear({ state, commit }) {
+      commit("cart_unselect_all");
+      commit("cart_set_undo", { list: state.cart_list.slice() });
+      commit("cart_list_reset");
+      commit("notify", {
+        type: "info",
+        description: "Carrinho esvaziado",
+        duration: 5000,
+        button: { label: "Desfazer", action: "cart_undo" }
+      });
+    },
+    cart_undo({ commit }) {
+      commit("cart_restore");
+      commit("notification_clear");
     }
   }
 });

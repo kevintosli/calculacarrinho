@@ -56,17 +56,23 @@
         </Overlay>
       </transition-group>
 
-      <content class="flex-col flex-grow-1 flex-shrink-1 relative">
+      <content
+        ref="content"
+        class="flex-col flex-grow-1 flex-shrink-1 relative"
+      >
         <template v-if="cart_list.length">
           <div class="heading">
             <h1 class="_label text-center">Carrinho</h1>
+            <p class="_hint text-center">
+              Toque em um item para editar ou remover
+            </p>
             <!-- <div class="_icon grphn-icon">questionmark_circle</div> -->
           </div>
 
           <div class="list-header flex-row flex-shrink-0">
             <div class="item-name">Nome</div>
             <div class="item-un">Un</div>
-            <div class="item-price">Preço</div>
+            <div class="item-price">Subtotal</div>
             <div></div>
           </div>
 
@@ -199,11 +205,6 @@
                 <span class="_text">Adicione ao carrinho</span>
               </li>
             </ol>
-
-            <p class="cart-empty-tip">
-              Dica: toque em <strong>Nome do item</strong> para identificar o
-              produto (opcional).
-            </p>
           </div>
           <!-- <div class="flex-shrink-0" style="height: var(--app-view-padding);" /> -->
         </template>
@@ -216,7 +217,7 @@
 
 <script>
 import { no_return } from "@js/utils";
-import { mapGetters, mapMutations } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import { format_brl } from "@js/currency";
 import CartList from "@components/CartList";
 import CalcControls from "@components/CalcControls";
@@ -238,6 +239,17 @@ export default {
       overlay_clearshoppingcart: false,
       overlay_was_app_updated: true
     };
+  },
+  watch: {
+    // Show the item that was just added at the end of the list
+    "cart_list.length"(length, previous) {
+      if (length > previous) {
+        this.$nextTick(() => {
+          const content = this.$refs.content;
+          if (content) content.scrollTop = content.scrollHeight;
+        });
+      }
+    }
   },
   computed: {
     ...mapGetters(["cart_list", "cart_units", "cart_total", "isMobile"]),
@@ -281,14 +293,10 @@ export default {
   },
   methods: {
     no_return,
-    ...mapMutations([
-      "changeMobileView",
-      "cart_unselect_all",
-      "cart_list_reset"
-    ]),
+    ...mapMutations(["changeMobileView"]),
+    ...mapActions(["cart_clear"]),
     clear_shoppingcart() {
-      this.cart_unselect_all();
-      this.cart_list_reset();
+      this.cart_clear();
       this.overlay_clearshoppingcart = false;
     },
     handleResize() {
@@ -361,14 +369,18 @@ content {
     align-items: center;
     background-color: var(--color-ui-background);
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    gap: rem(4px);
     flex-shrink: 0;
-    padding: 24px var(--app-view-padding) rem(40px);
+    padding: 24px var(--app-view-padding) rem(24px);
     z-index: 120;
 
     ._label {
       color: var(--color-text-heading);
-      flex-grow: 1;
+    }
+    ._hint {
+      color: var(--color-text-placeholder);
+      @include graphene-font-style-label();
     }
     ._icon {
       color: var(--color-text-placeholder);
@@ -584,21 +596,16 @@ cartlist-controls {
       color: var(--color-ui-background);
     }
   }
+}
 
-  .cart-empty-tip {
-    @include graphene-font-style-label();
-    color: var(--color-text-placeholder);
-    margin-top: rem(20px);
-    max-width: rem(300px);
-
-    strong {
-      color: var(--color-text-description);
-      font-weight: 600;
-    }
+// Very short screens (e.g. iPhone SE): the steps matter more than the drawing
+@media (max-height: 600px) {
+  .cart-empty .cart-empty-illustration {
+    display: none;
   }
 }
 
-// Short screens (e.g. iPhone SE): keep everything visible above the keypad
+// Short screens: keep everything visible above the keypad
 @media (max-height: 700px) {
   .cart-empty {
     padding-top: rem(12px);
@@ -612,8 +619,7 @@ cartlist-controls {
       font-size: rem(17px);
       line-height: rem(24px);
     }
-    .cart-empty-subtitle,
-    .cart-empty-tip {
+    .cart-empty-subtitle {
       display: none;
     }
     .walkthrough {
