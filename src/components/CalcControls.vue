@@ -457,13 +457,6 @@ export default {
     }
   }
 
-  // Very short screens: the running total is also at the end of the list
-  @media (max-height: 600px) {
-    .calc-status:not(._editing) {
-      display: none;
-    }
-  }
-
   .calc-caption {
     color: var(--color-text-placeholder);
     display: block;

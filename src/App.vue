@@ -30,21 +30,6 @@
 
       <transition-group name="fade">
         <Overlay
-          v-if="overlay_clearshoppingcart"
-          accept-label="Limpar o carrinho"
-          @reject="overlay_clearshoppingcart = false"
-          @accept="clear_shoppingcart"
-          key="clearshoppincart"
-        >
-          <p class="graphene-font-style-paragraph">
-            Quer mesmo limpar o carrinho?
-          </p>
-          <p class="graphene-font-style-label">
-            Esta ação não poderá ser desfeita.
-          </p>
-        </Overlay>
-
-        <Overlay
           v-if="!overlay_was_app_updated"
           accept-label="Concluído"
           mode="drawer-bottom"
@@ -78,27 +63,13 @@
 
           <CartList :list="cart_list" />
 
-          <cartlist-footer class="flex-col flex-shrink-0" ontouchstart>
-            <cartlist-footer-item class="flex-row">
-              <div class="__label">Itens no carrinho</div>
-              <div class="__value">{{ cart_units }}un</div>
-            </cartlist-footer-item>
-            <cartlist-footer-item class="flex-row">
-              <div class="__label">Total da compra</div>
-              <div class="__value">{{ cart_total_label }}</div>
-            </cartlist-footer-item>
-            <cartlist-controls class="flex-col">
-              <cartlist-control
-                class="_delete"
-                role="button"
-                @click="overlay_clearshoppingcart = true"
-                @mouseleave.prevent="no_return"
-              >
-                <div class="__label">Remover todos os itens</div>
-                <div class="__icon grphn-icon">trashcan</div>
-              </cartlist-control>
-            </cartlist-controls>
-          </cartlist-footer>
+          <div class="cart-clear flex-row justify-center">
+            <HoldButton
+              label="Esvaziar carrinho"
+              @confirm="cart_clear"
+              @too-short="clear_hint"
+            />
+          </div>
 
           <div class="little-about-info text-right">
             <p>{{ app_title }} v{{ app_version }}{{ app_version_prefix }}</p>
@@ -213,13 +184,12 @@
 </template>
 
 <script>
-import { no_return } from "@js/utils";
 import { mapActions, mapGetters, mapMutations } from "vuex";
-import { format_brl } from "@js/currency";
 import CartList from "@components/CartList";
 import CalcControls from "@components/CalcControls";
 import Notifications from "@components/Notifications";
 import Overlay from "@components/Overlay";
+import HoldButton from "@components/HoldButton";
 
 export default {
   name: "app",
@@ -228,12 +198,12 @@ export default {
     CalcControls,
     Notifications,
     Overlay,
+    HoldButton,
     // Only the desktop screen needs the QR code library: load it on demand
     QRCode: () => import("@chenfengyuan/vue-qrcode")
   },
   data() {
     return {
-      overlay_clearshoppingcart: false,
       overlay_was_app_updated: true
     };
   },
@@ -249,10 +219,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["cart_list", "cart_units", "cart_total", "isMobile"]),
-    cart_total_label() {
-      return format_brl(this.cart_total);
-    },
+    ...mapGetters(["cart_list", "isMobile"]),
     qr_desktop_options() {
       return {
         scale: 6.5,
@@ -283,12 +250,14 @@ export default {
     }
   },
   methods: {
-    no_return,
-    ...mapMutations(["changeMobileView"]),
+    ...mapMutations(["changeMobileView", "notify"]),
     ...mapActions(["cart_clear"]),
-    clear_shoppingcart() {
-      this.cart_clear();
-      this.overlay_clearshoppingcart = false;
+    clear_hint() {
+      this.notify({
+        type: "info",
+        description: "Segure o botão por 2 segundos para esvaziar",
+        duration: 2500
+      });
     },
     handleResize() {
       // Coalesce resize bursts (rotation, keyboard) into one check per frame
@@ -405,81 +374,8 @@ content {
   width: 36%;
 }
 
-cartlist-footer {
-  --padding-y: #{rem(8px)};
-  --padding-x: #{rem(12px)};
-  background-color: var(--color-ui-separator);
-  border-radius: var(--ui-border-radius-regular);
-  color: var(--color-text-heading);
-  margin: rem(16px) var(--app-view-padding) 0;
-  overflow: hidden;
-  padding: var(--padding-y) var(--padding-x) 0;
-  @include graphene-font-style-paragraph();
-
-  cartlist-footer-item {
-    line-height: rem(30px);
-
-    .__label,
-    .__value {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .__label {
-      color: var(--color-text-placeholder);
-      flex-grow: 1;
-
-      .grphn-icon {
-        margin-right: rem(4px);
-      }
-    }
-    .__value {
-      font-weight: $graphene-font-weight-semibold;
-      flex-shrink: 0;
-    }
-  }
-}
-cartlist-controls {
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  margin: rem(8px) calc(var(--padding-x) * -1) 0;
-
-  cartlist-control {
-    @include graphene-font-style-label;
-    align-items: center;
-    border-top: rem(1.6px) solid var(--color-ui-background);
-    color: var(--color-text-paragraph);
-    display: flex;
-    flex-direction: row;
-    font-weight: $graphene-font-weight-semibold;
-    height: rem(48px);
-    justify-content: center;
-    // line-height: rem(44px);
-    padding: 0 var(--padding-x);
-    position: relative;
-
-    &:hover:active {
-      color: var(--color-text-heading);
-    }
-    &._delete {
-      background-color: rgba($color-ui-delete-400, 0.2);
-      color: var(--color-ui-delete);
-
-      &:hover:active {
-        background-color: var(--color-ui-delete);
-        color: var(--color-ui-background);
-      }
-    }
-    .__label {
-      flex-grow: 1;
-    }
-    .__icon {
-      flex-shrink: 0;
-      font-size: rem(24px);
-      justify-content: flex-end;
-    }
-  }
+.cart-clear {
+  margin: rem(24px) var(--app-view-padding) 0;
 }
 
 .little-about-info {
