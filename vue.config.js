@@ -2,7 +2,8 @@ const path = require("path");
 process.env.VUE_APP_VERSION = require("./package.json").version;
 
 module.exports = {
-  // publicPath: "/calculacarrinho/",
+  // GitHub Pages serves the app from /calculacarrinho/
+  publicPath: process.env.NODE_ENV === "production" ? "/calculacarrinho/" : "/",
   // pluginOptions: {
   //   "style-resources-loader": {
   //     preProcessor: "scss",
