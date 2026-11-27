@@ -244,7 +244,14 @@ export default {
       this.overlay_clearshoppingcart = false;
     },
     handleResize() {
-      this.changeMobileView(window.innerWidth <= 440);
+      // Treat any touch-first device whose shorter side is phone-sized as
+      // mobile, regardless of orientation or how wide newer phones get.
+      const coarsePointer =
+        window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+      const shortestSide = Math.min(window.innerWidth, window.innerHeight);
+      this.changeMobileView(
+        window.innerWidth <= 600 || (coarsePointer && shortestSide <= 600)
+      );
     }
   },
   created() {
