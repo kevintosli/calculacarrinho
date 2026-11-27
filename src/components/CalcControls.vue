@@ -77,138 +77,150 @@
       <strong>{{ input_subtotal_label }}</strong>
     </div>
     <!-- Hidden while the phone keyboard is open for the item name -->
-    <div v-show="!input_name.focus" class="calc-controls" ontouchstart="">
-      <!-- Interaction -->
-      <div class="calc-key" style="grid-area: add;">
-        <div
-          :class="[
-            'calc-inner-key grphn-icon __accent',
-            { _invisible: editing }
-          ]"
-          key="add"
-          role="button"
-          aria-label="Adicionar ao carrinho"
-          title="Adicionar ao carrinho"
-          @click="add_to_list"
-        >
-          arrow_up
+    <transition
+      :css="false"
+      @before-enter="keypad_before_enter"
+      @enter="keypad_enter"
+      @after-enter="keypad_after"
+      @before-leave="keypad_before_leave"
+      @leave="keypad_leave"
+      @after-leave="keypad_after"
+    >
+      <div v-show="!input_name.focus" class="calc-keypad">
+        <div class="calc-controls" ontouchstart="">
+          <!-- Interaction -->
+          <div class="calc-key" style="grid-area: add;">
+            <div
+              :class="[
+                'calc-inner-key grphn-icon __accent',
+                { _invisible: editing }
+              ]"
+              key="add"
+              role="button"
+              aria-label="Adicionar ao carrinho"
+              title="Adicionar ao carrinho"
+              @click="add_to_list"
+            >
+              arrow_up
+            </div>
+            <div
+              :class="[
+                'calc-inner-key grphn-icon __accent',
+                { _invisible: !editing }
+              ]"
+              key="save"
+              role="button"
+              aria-label="Salvar alterações"
+              title="Salvar alterações"
+              @click="update_to_list"
+            >
+              checkmark
+            </div>
+          </div>
+          <div
+            class="calc-key"
+            style="grid-area: plus;"
+            title="Aumentar quantidade"
+            @click="input_units.add(1)"
+          >
+            <div
+              class="calc-inner-key grphn-icon __accent"
+              role="button"
+              aria-label="Aumentar quantidade"
+            >
+              plus
+            </div>
+          </div>
+          <div
+            class="calc-key"
+            style="grid-area: minus;"
+            title="Diminuir quantidade"
+            @click="input_units.remove(1)"
+          >
+            <div
+              class="calc-inner-key grphn-icon __accent"
+              role="button"
+              aria-label="Diminuir quantidade"
+            >
+              minus
+            </div>
+          </div>
+          <div class="calc-key" style="grid-area: reset;">
+            <div
+              v-if="!editing"
+              class="calc-inner-key __accent"
+              role="button"
+              aria-label="Limpar valores digitados"
+              title="Limpar valores digitados"
+              @click="reset_controls"
+            >
+              {{
+                is_initial_input_units &&
+                is_initial_input_price &&
+                is_initial_input_name
+                  ? "AC"
+                  : "C"
+              }}
+            </div>
+            <div
+              v-else
+              class="calc-inner-key grphn-icon __delete"
+              role="button"
+              aria-label="Remover produto do carrinho"
+              title="Remover produto do carrinho"
+              @click="remove_from_list"
+            >
+              trashcan
+            </div>
+          </div>
+          <!-- Numbers -->
+          <div class="calc-key" style="grid-area: r3c1;">
+            <div class="calc-inner-key" @click="input_price.update(1)">1</div>
+          </div>
+          <div class="calc-key" style="grid-area: r3c2;">
+            <div class="calc-inner-key" @click="input_price.update(2)">2</div>
+          </div>
+          <div class="calc-key" style="grid-area: r3c3;">
+            <div class="calc-inner-key" @click="input_price.update(3)">3</div>
+          </div>
+          <div class="calc-key" style="grid-area: r2c1;">
+            <div class="calc-inner-key" @click="input_price.update(4)">4</div>
+          </div>
+          <div class="calc-key" style="grid-area: r2c2;">
+            <div class="calc-inner-key" @click="input_price.update(5)">5</div>
+          </div>
+          <div class="calc-key" style="grid-area: r2c3;">
+            <div class="calc-inner-key" @click="input_price.update(6)">6</div>
+          </div>
+          <div class="calc-key" style="grid-area: r1c1;">
+            <div class="calc-inner-key" @click="input_price.update(7)">7</div>
+          </div>
+          <div class="calc-key" style="grid-area: r1c2;">
+            <div class="calc-inner-key" @click="input_price.update(8)">8</div>
+          </div>
+          <div class="calc-key" style="grid-area: r1c3;">
+            <div class="calc-inner-key" @click="input_price.update(9)">9</div>
+          </div>
+          <div class="calc-key __key-zero" style="grid-area: zero;">
+            <div class="calc-inner-key" @click="input_price.update(0)">
+              <div class="__key-zero-1" style="grid-area: key1;">0</div>
+              <div class="__key-zero-2" style="grid-area: key2;">0</div>
+            </div>
+          </div>
+          <div class="calc-key" style="grid-area: erase;">
+            <div
+              :class="['calc-inner-key grphn-icon']"
+              role="button"
+              aria-label="Apagar último dígito"
+              title="Apagar último dígito"
+              @click="input_price.backspace"
+            >
+              delete_left
+            </div>
+          </div>
         </div>
-        <div
-          :class="[
-            'calc-inner-key grphn-icon __accent',
-            { _invisible: !editing }
-          ]"
-          key="save"
-          role="button"
-          aria-label="Salvar alterações"
-          title="Salvar alterações"
-          @click="update_to_list"
-        >
-          checkmark
-        </div>
       </div>
-      <div
-        class="calc-key"
-        style="grid-area: plus;"
-        title="Aumentar quantidade"
-        @click="input_units.add(1)"
-      >
-        <div
-          class="calc-inner-key grphn-icon __accent"
-          role="button"
-          aria-label="Aumentar quantidade"
-        >
-          plus
-        </div>
-      </div>
-      <div
-        class="calc-key"
-        style="grid-area: minus;"
-        title="Diminuir quantidade"
-        @click="input_units.remove(1)"
-      >
-        <div
-          class="calc-inner-key grphn-icon __accent"
-          role="button"
-          aria-label="Diminuir quantidade"
-        >
-          minus
-        </div>
-      </div>
-      <div class="calc-key" style="grid-area: reset;">
-        <div
-          v-if="!editing"
-          class="calc-inner-key __accent"
-          role="button"
-          aria-label="Limpar valores digitados"
-          title="Limpar valores digitados"
-          @click="reset_controls"
-        >
-          {{
-            is_initial_input_units &&
-            is_initial_input_price &&
-            is_initial_input_name
-              ? "AC"
-              : "C"
-          }}
-        </div>
-        <div
-          v-else
-          class="calc-inner-key grphn-icon __delete"
-          role="button"
-          aria-label="Remover produto do carrinho"
-          title="Remover produto do carrinho"
-          @click="remove_from_list"
-        >
-          trashcan
-        </div>
-      </div>
-      <!-- Numbers -->
-      <div class="calc-key" style="grid-area: r3c1;">
-        <div class="calc-inner-key" @click="input_price.update(1)">1</div>
-      </div>
-      <div class="calc-key" style="grid-area: r3c2;">
-        <div class="calc-inner-key" @click="input_price.update(2)">2</div>
-      </div>
-      <div class="calc-key" style="grid-area: r3c3;">
-        <div class="calc-inner-key" @click="input_price.update(3)">3</div>
-      </div>
-      <div class="calc-key" style="grid-area: r2c1;">
-        <div class="calc-inner-key" @click="input_price.update(4)">4</div>
-      </div>
-      <div class="calc-key" style="grid-area: r2c2;">
-        <div class="calc-inner-key" @click="input_price.update(5)">5</div>
-      </div>
-      <div class="calc-key" style="grid-area: r2c3;">
-        <div class="calc-inner-key" @click="input_price.update(6)">6</div>
-      </div>
-      <div class="calc-key" style="grid-area: r1c1;">
-        <div class="calc-inner-key" @click="input_price.update(7)">7</div>
-      </div>
-      <div class="calc-key" style="grid-area: r1c2;">
-        <div class="calc-inner-key" @click="input_price.update(8)">8</div>
-      </div>
-      <div class="calc-key" style="grid-area: r1c3;">
-        <div class="calc-inner-key" @click="input_price.update(9)">9</div>
-      </div>
-      <div class="calc-key __key-zero" style="grid-area: zero;">
-        <div class="calc-inner-key" @click="input_price.update(0)">
-          <div class="__key-zero-1" style="grid-area: key1;">0</div>
-          <div class="__key-zero-2" style="grid-area: key2;">0</div>
-        </div>
-      </div>
-      <div class="calc-key" style="grid-area: erase;">
-        <div
-          :class="['calc-inner-key grphn-icon']"
-          role="button"
-          aria-label="Apagar último dígito"
-          title="Apagar último dígito"
-          @click="input_price.backspace"
-        >
-          delete_left
-        </div>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -313,6 +325,68 @@ export default {
     }
   },
   methods: {
+    // Keypad show/hide: animate the height of the outer box (the keys keep
+    // their size) together with a fade
+    keypad_animate(el, from, to, done) {
+      const reduce =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce) return done();
+      el.style.overflow = "hidden";
+      el.style.height = `${from.height}px`;
+      el.style.opacity = from.opacity;
+      el.style.transform = `translateY(${from.y}px)`;
+      void el.offsetHeight; // apply the start values before transitioning
+      el.style.transition =
+        "height 260ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease, transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1)";
+      el.style.height = `${to.height}px`;
+      el.style.opacity = to.opacity;
+      el.style.transform = `translateY(${to.y}px)`;
+      let finished = false;
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        el.removeEventListener("transitionend", on_end);
+        done();
+      };
+      const on_end = event => {
+        if (event.target === el && event.propertyName === "height") finish();
+      };
+      el.addEventListener("transitionend", on_end);
+      setTimeout(finish, 400); // in case transitionend never fires
+    },
+    keypad_before_enter(el) {
+      el.style.height = "0px";
+      el.style.opacity = 0;
+    },
+    keypad_enter(el, done) {
+      el.style.height = "";
+      const height = el.scrollHeight;
+      this.keypad_animate(
+        el,
+        { height: 0, opacity: 0, y: 12 },
+        { height, opacity: 1, y: 0 },
+        done
+      );
+    },
+    keypad_before_leave(el) {
+      el.style.height = `${el.offsetHeight}px`;
+    },
+    keypad_leave(el, done) {
+      this.keypad_animate(
+        el,
+        { height: el.offsetHeight, opacity: 1, y: 0 },
+        { height: 0, opacity: 0, y: 12 },
+        done
+      );
+    },
+    keypad_after(el) {
+      el.style.height = "";
+      el.style.opacity = "";
+      el.style.overflow = "";
+      el.style.transform = "";
+      el.style.transition = "";
+    },
     no_return,
     ...mapMutations(["cart_add", "cart_unselect_all", "notify"]),
     ...mapActions(["cart_update", "cart_remove"]),
@@ -402,6 +476,12 @@ export default {
     @media (max-width: 375px) and (min-height: 812px) {
       padding-bottom: env(safe-area-inset-bottom);
     }
+  }
+
+  transition: padding-bottom 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 
   // Keypad hidden while typing the name: keep the safe-area padding only
