@@ -5,11 +5,16 @@
   "start_url": "/calculacarrinho/ta-quanto/",
   "scope": "/calculacarrinho/ta-quanto/",
   "display": "standalone",
-  "background_color": "#2dae4b",
+  "background_color": "#00c853",
   "theme_color": "#2dae4b",
   "lang": "pt-BR",
   "description": "Some o preço das compras enquanto passeia pelo mercado e evite surpresas no caixa.",
-  "categories": ["lifestyle", "finance", "utilities", "food"],
+  "categories": [
+    "lifestyle",
+    "finance",
+    "utilities",
+    "food"
+  ],
   "orientation": "portrait",
   "icons": [
     {
@@ -25,7 +30,7 @@
       "purpose": "any"
     },
     {
-      "src": "img/ta-quanto/icons/android-chrome-512x512.png",
+      "src": "img/ta-quanto/icons/android-chrome-maskable-512x512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "maskable"
