@@ -49,13 +49,13 @@
           <div class="heading">
             <h1 class="_label text-center">Carrinho</h1>
             <p class="_hint text-center">
-              Toque em um item para editar ou remover
+              Toque em um produto para editar ou remover
             </p>
             <!-- <div class="_icon grphn-icon">questionmark_circle</div> -->
           </div>
 
           <div class="list-header flex-row flex-shrink-0">
-            <div class="item-name">Nome</div>
+            <div class="item-name">Produto</div>
             <div class="item-un">Un</div>
             <div class="item-price">Subtotal</div>
             <div></div>
@@ -153,7 +153,7 @@
                   <span class="key-helper">8</span>
                   <span class="key-helper">9</span>
                 </span>
-                <span class="_text">Digite o preço do item</span>
+                <span class="_text">Digite o preço do produto</span>
               </li>
               <li>
                 <span class="_keys">

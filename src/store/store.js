@@ -183,7 +183,7 @@ export default new Vuex.Store({
       commit("cart_remove_item", index);
       commit("notify", {
         type: "info",
-        description: `${item.name || "Item"} removido`,
+        description: `${item.name || "Produto"} removido`,
         duration: 5000,
         button: { label: "Desfazer", action: "cart_undo" }
       });

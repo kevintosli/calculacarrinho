@@ -9,7 +9,7 @@
     <div v-if="editing" class="calc-status _editing flex-row">
       <div class="_label">
         Editando
-        <strong>{{ cart_list_selected.name || "item sem nome" }}</strong>
+        <strong>{{ cart_list_selected.name || "produto sem nome" }}</strong>
       </div>
       <button type="button" class="_action" @click="cart_unselect_all">
         Cancelar
@@ -17,7 +17,8 @@
     </div>
     <div v-else-if="cart_units" class="calc-status flex-row">
       <div class="_label">
-        {{ cart_units }} {{ cart_units === 1 ? "item" : "itens" }} no carrinho
+        {{ cart_units }} {{ cart_units === 1 ? "produto" : "produtos" }} no
+        carrinho
       </div>
       <div class="_value">{{ cart_total_label }}</div>
     </div>
@@ -42,7 +43,7 @@
             name="product"
             ref="item_name"
             v-model="input_name.value"
-            placeholder="Nome do item"
+            placeholder="Nome do produto"
             enterkeyhint="done"
             autocomplete="off"
             @focus="input_focus"
@@ -155,8 +156,8 @@
           v-else
           class="calc-inner-key grphn-icon __delete"
           role="button"
-          aria-label="Remover item do carrinho"
-          title="Remover item do carrinho"
+          aria-label="Remover produto do carrinho"
+          title="Remover produto do carrinho"
           @click="remove_from_list"
         >
           trashcan
@@ -331,7 +332,7 @@ export default {
         });
         this.notify({
           type: "success",
-          description: `${name || "Item"} adicionado ao carrinho`,
+          description: `${name || "Produto"} adicionado ao carrinho`,
           duration: 2000
         });
         this.reset_controls();
