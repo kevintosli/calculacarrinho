@@ -64,10 +64,10 @@
           <CartList :list="cart_list" />
 
           <div class="cart-clear flex-row justify-center">
-            <HoldButton
-              label="Esvaziar carrinho"
+            <SwipeButton
+              label="Deslize para esvaziar"
               @confirm="cart_clear"
-              @too-short="clear_hint"
+              @tap="clear_hint"
             />
           </div>
 
@@ -189,7 +189,7 @@ import CartList from "@components/CartList";
 import CalcControls from "@components/CalcControls";
 import Notifications from "@components/Notifications";
 import Overlay from "@components/Overlay";
-import HoldButton from "@components/HoldButton";
+import SwipeButton from "@components/SwipeButton";
 
 export default {
   name: "app",
@@ -198,7 +198,7 @@ export default {
     CalcControls,
     Notifications,
     Overlay,
-    HoldButton,
+    SwipeButton,
     // Only the desktop screen needs the QR code library: load it on demand
     QRCode: () => import("@chenfengyuan/vue-qrcode")
   },
@@ -255,7 +255,7 @@ export default {
     clear_hint() {
       this.notify({
         type: "info",
-        description: "Segure o botão por 2 segundos para esvaziar",
+        description: "Arraste a lixeira até o fim para esvaziar",
         duration: 2500
       });
     },
