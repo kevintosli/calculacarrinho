@@ -17,11 +17,11 @@
 
     <!-- Apple WebApp -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Meu Carrinho" />
+    <meta name="apple-mobile-web-app-title" content="<%= VUE_APP_TITLE %>" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link
       rel="mask-icon"
-      href="img/icons/safari-pinned-tab.svg"
+      href="<%= VUE_APP_BRAND_IMG %>/icons/safari-pinned-tab.svg"
       color="#696D70"
     />
 
@@ -29,58 +29,58 @@
     <link
       rel="apple-touch-startup-image"
       media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)"
-      href="img/splash/apple-launch-414x896@3x.png"
+      href="<%= VUE_APP_BRAND_IMG %>/splash/apple-launch-414x896@3x.<%= VUE_APP_SPLASH_EXT %>"
     />
     <!-- iPhone 11, Xr (828px x 1792px) -->
     <link
       rel="apple-touch-startup-image"
       media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)"
-      href="img/splash/apple-launch-414x896@2x.png"
+      href="<%= VUE_APP_BRAND_IMG %>/splash/apple-launch-414x896@2x.<%= VUE_APP_SPLASH_EXT %>"
     />
     <!-- iPhone 11 Pro, Xs, X (1125px x 2436px) -->
     <link
       rel="apple-touch-startup-image"
       media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)"
-      href="img/splash/apple-launch-375x812@3x.png"
+      href="<%= VUE_APP_BRAND_IMG %>/splash/apple-launch-375x812@3x.<%= VUE_APP_SPLASH_EXT %>"
     />
     <!-- iPhone 8 Plus, 7 Plus, 6s Plus, 6 Plus (1242px x 2208px) -->
     <link
       rel="apple-touch-startup-image"
       media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)"
-      href="img/splash/apple-launch-414x736@3x.png"
+      href="<%= VUE_APP_BRAND_IMG %>/splash/apple-launch-414x736@3x.<%= VUE_APP_SPLASH_EXT %>"
     />
     <!-- iPhone 8, 7, 6s, 6 (750px x 1334px) -->
     <link
       rel="apple-touch-startup-image"
       media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)"
-      href="img/splash/apple-launch-375x667@2x.png"
+      href="<%= VUE_APP_BRAND_IMG %>/splash/apple-launch-375x667@2x.<%= VUE_APP_SPLASH_EXT %>"
     />
     <!-- iPhone SE, iPhone 5S and earlier (640px x 1136px) -->
     <link
       rel="apple-touch-startup-image"
       media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
-      href="img/splash/apple-launch-320x568@2x.png"
+      href="<%= VUE_APP_BRAND_IMG %>/splash/apple-launch-320x568@2x.<%= VUE_APP_SPLASH_EXT %>"
     />
 
     <link
       rel="apple-touch-icon"
       sizes="120x120"
-      href="img/icons/apple-touch-icon-120x120.png"
+      href="<%= VUE_APP_BRAND_IMG %>/icons/apple-touch-icon-120x120.png"
     />
     <link
       rel="apple-touch-icon"
       sizes="152x152"
-      href="img/icons/apple-touch-icon-152x152.png"
+      href="<%= VUE_APP_BRAND_IMG %>/icons/apple-touch-icon-152x152.png"
     />
     <link
       rel="apple-touch-icon"
       sizes="167x167"
-      href="img/icons/apple-touch-icon-167x167.png"
+      href="<%= VUE_APP_BRAND_IMG %>/icons/apple-touch-icon-167x167.png"
     />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="img/icons/apple-touch-icon-180x180.png"
+      href="<%= VUE_APP_BRAND_IMG %>/icons/apple-touch-icon-180x180.png"
     />
 
     <!-- Android WebApp -->
@@ -88,7 +88,7 @@
     <meta name="theme-color" content="#2dae4b" />
 
     <!-- General WebApp -->
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="<%= VUE_APP_MANIFEST %>" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -97,14 +97,14 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700&display=swap"
     />
-    <link rel="icon" sizes="16x16" href="img/icons/favicon-16x16.png" />
-    <link rel="icon" sizes="32x32" href="img/icons/favicon-32x32.png" />
-    <link rel="icon" sizes="64x64" href="img/icons/favicon-64x64.png" />
+    <link rel="icon" sizes="16x16" href="<%= VUE_APP_BRAND_IMG %>/icons/favicon-16x16.png" />
+    <link rel="icon" sizes="32x32" href="<%= VUE_APP_BRAND_IMG %>/icons/favicon-32x32.png" />
+    <link rel="icon" sizes="64x64" href="<%= VUE_APP_BRAND_IMG %>/icons/favicon-64x64.png" />
 
-    <title>Meu Carrinho</title>
+    <title><%= VUE_APP_TITLE %></title>
     <meta
       name="description"
-      content="Chega de esquecer itens da compra e surpresas no caixa do mercado. Conheça o app de listas de compras e mantenha tudo sob controle."
+      content="<%= VUE_APP_DESCRIPTION %>"
     />
     <meta
       name="keywords"

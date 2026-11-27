@@ -1,0 +1,34 @@
+{
+  "name": "Tá Quanto",
+  "short_name": "Tá Quanto",
+  "id": "/calculacarrinho/ta-quanto/",
+  "start_url": "/calculacarrinho/ta-quanto/",
+  "scope": "/calculacarrinho/ta-quanto/",
+  "display": "standalone",
+  "background_color": "#2dae4b",
+  "theme_color": "#2dae4b",
+  "lang": "pt-BR",
+  "description": "Some o preço das compras enquanto passeia pelo mercado e evite surpresas no caixa.",
+  "categories": ["lifestyle", "finance", "utilities", "food"],
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "img/ta-quanto/icons/android-chrome-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "img/ta-quanto/icons/android-chrome-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "img/ta-quanto/icons/android-chrome-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ]
+}

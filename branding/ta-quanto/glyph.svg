@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="80 110 352 292">
+  <mask id="cut">
+    <g transform="translate(256 256) rotate(-30) translate(-256 -256)">
+      <path fill="#fff" d="M176 168h188a40 40 0 0 1 40 40v96a40 40 0 0 1-40 40H176a24 24 0 0 1-17-7l-64-64a24 24 0 0 1 0-34l64-64a24 24 0 0 1 17-7z"/>
+      <circle cx="150" cy="256" r="18" fill="#000"/>
+      <g transform="translate(290 254) rotate(30)">
+        <path fill="none" stroke="#000" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" d="M-30 -24c0-22 14-34 30-34s30 12 30 30c0 24-30 22-30 44"/>
+        <circle cx="0" cy="50" r="15" fill="#000"/>
+      </g>
+    </g>
+  </mask>
+  <rect x="80" y="110" width="352" height="292" fill="#fff" mask="url(#cut)"/>
+</svg>

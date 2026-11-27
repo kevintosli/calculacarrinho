@@ -3,7 +3,9 @@ process.env.VUE_APP_VERSION = require("./package.json").version;
 
 module.exports = {
   // GitHub Pages serves the app from /calculacarrinho/
-  publicPath: process.env.NODE_ENV === "production" ? "/calculacarrinho/" : "/",
+  publicPath:
+    process.env.VUE_APP_PUBLIC_PATH ||
+    (process.env.NODE_ENV === "production" ? "/calculacarrinho/" : "/"),
   // pluginOptions: {
   //   "style-resources-loader": {
   //     preProcessor: "scss",
@@ -25,6 +27,17 @@ module.exports = {
     // Don't prefetch lazy chunks: the only one is the desktop QR code,
     // which phones never need
     config.plugins.delete("prefetch");
+
+    // Each brand ships only its own icons, splash screens and manifest
+    const isTaQuanto = process.env.VUE_APP_MANIFEST === "manifest-ta-quanto.json";
+    config.plugin("copy").tap(args => {
+      args[0][0].ignore.push(
+        ...(isTaQuanto
+          ? ["img/icons/**", "img/splash/**", "manifest.json"]
+          : ["img/ta-quanto/**", "manifest-ta-quanto.json"])
+      );
+      return args;
+    });
 
     const svgRule = config.module.rule("svg");
     svgRule.uses.clear();
