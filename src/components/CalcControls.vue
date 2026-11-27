@@ -1,6 +1,9 @@
 <template>
   <div
-    :class="['calc-controls-wrapper', { _editing: editing }]"
+    :class="[
+      'calc-controls-wrapper',
+      { _editing: editing, _typing: input_name.focus }
+    ]"
     @dblclick="no_return"
   >
     <div v-if="editing" class="calc-status _editing flex-row">
@@ -72,7 +75,8 @@
       {{ input_units.value }} × {{ input_price_label }} =
       <strong>{{ input_subtotal_label }}</strong>
     </div>
-    <div class="calc-controls" ontouchstart="">
+    <!-- Hidden while the phone keyboard is open for the item name -->
+    <div v-show="!input_name.focus" class="calc-controls" ontouchstart="">
       <!-- Interaction -->
       <div class="calc-key" style="grid-area: add;">
         <div
@@ -368,7 +372,7 @@ export default {
       this.input_name.focus = true;
     },
     input_blur() {
-      this.input_name.value.trim();
+      this.input_name.value = this.input_name.value.trim();
       this.input_name.focus = false;
     },
     input_get_blur() {
@@ -397,6 +401,11 @@ export default {
     @media (max-width: 375px) and (min-height: 812px) {
       padding-bottom: env(safe-area-inset-bottom);
     }
+  }
+
+  // Keypad hidden while typing the name: keep the safe-area padding only
+  &._typing {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   &._editing {
