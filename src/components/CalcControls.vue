@@ -100,7 +100,7 @@
             <div
               :class="['calc-stepper', { _dragging: stepper_drag.active }]"
               role="group"
-              aria-label="Quantidade: arraste para cima ou para baixo"
+              aria-label="Quantidade: arraste para baixo para aumentar"
               @pointerdown="stepper_down"
               @pointermove="stepper_move"
               @pointerup="stepper_up"
@@ -112,19 +112,34 @@
                 class="calc-key _step"
                 aria-label="Aumentar quantidade"
                 title="Aumentar quantidade"
-                @click="input_units.add(1)"
+                @click="step_units(1)"
               >
                 <span class="ms" aria-hidden="true">keyboard_arrow_up</span>
               </button>
-              <span class="_units" aria-live="polite">
-                {{ input_units.value }}
-              </span>
+              <!-- Number drum: larger numbers wait above, smaller below -->
+              <div
+                :class="['_drum', { _rolling: drum.rolling }]"
+                aria-live="polite"
+                :aria-label="`${input_units.value} unidades`"
+              >
+                <span
+                  v-for="n in drum_numbers"
+                  :key="n"
+                  :class="[
+                    '_drum-number',
+                    { _current: n === input_units.value }
+                  ]"
+                  :style="drum_style(n)"
+                  aria-hidden="true"
+                  >{{ n }}</span
+                >
+              </div>
               <button
                 type="button"
                 :class="['calc-key _step', { _muted: is_initial_input_units }]"
                 aria-label="Diminuir quantidade"
                 title="Diminuir quantidade"
-                @click="input_units.remove(1)"
+                @click="step_units(-1)"
               >
                 <span class="ms" aria-hidden="true">keyboard_arrow_down</span>
               </button>
@@ -181,6 +196,9 @@ import { no_return } from "@js/utils";
 import { mapMutations, mapGetters, mapActions } from "vuex";
 import { format_amount } from "@js/currency";
 
+// Distance in px between numbers on the quantity drum (one step of drag)
+const DRUM_STEP = 28;
+
 export default {
   name: "CalcControls",
   data() {
@@ -194,6 +212,11 @@ export default {
         start_units: 1,
         pointer_id: null,
         just_dragged: false
+      },
+      // Visual offset of the drum in px (follows the finger between steps)
+      drum: {
+        offset: 0,
+        rolling: false
       },
       input_name: {
         value: "",
@@ -266,6 +289,14 @@ export default {
   },
   computed: {
     ...mapGetters(["cart_list_selected"]),
+    drum_numbers() {
+      const value = this.input_units.value;
+      const numbers = [];
+      for (let n = value - 2; n <= value + 2; n++) {
+        if (n >= 1 && n <= 99) numbers.push(n);
+      }
+      return numbers;
+    },
     input_amount_label() {
       return format_amount(this.input_price.value);
     },
@@ -293,23 +324,52 @@ export default {
     stepper_move(event) {
       const drag = this.stepper_drag;
       if (!drag.pressed || event.pointerId !== drag.pointer_id) return;
-      const dy = drag.start_y - event.clientY; // positive = finger moved up
+      const dy = event.clientY - drag.start_y; // positive = finger moved down
       if (!drag.active) {
         if (Math.abs(dy) < 6) return; // still a tap
         drag.active = true;
+        this.drum.rolling = false;
         // From now on every move goes to the stepper, wherever the finger is
         event.currentTarget.setPointerCapture(event.pointerId);
       }
       event.preventDefault();
-      const STEP_PX = 20;
-      const units = Math.min(
-        99,
-        Math.max(1, drag.start_units + Math.round(dy / STEP_PX))
-      );
+      // Pulling down brings the next larger number in from the top
+      const wanted = drag.start_units + Math.round(dy / DRUM_STEP);
+      const units = Math.min(99, Math.max(1, wanted));
+      let offset = dy - (units - drag.start_units) * DRUM_STEP;
+      if (units !== wanted) offset = offset * 0.25; // resist past 1 or 99
+      this.drum.offset = Math.max(-DRUM_STEP, Math.min(DRUM_STEP, offset));
       if (units !== this.input_units.value) {
         this.input_units.value = units;
         if (navigator.vibrate) navigator.vibrate(5);
       }
+    },
+    // Snap the drum back so the current number sits in the middle
+    drum_settle() {
+      this.drum.rolling = true;
+      this.drum.offset = 0;
+    },
+    // Arrow taps roll the drum one step
+    step_units(direction) {
+      const before = this.input_units.value;
+      if (direction > 0) this.input_units.add(1);
+      else this.input_units.remove(1);
+      if (this.input_units.value === before) return;
+      // Start where the new number was (above for +1, below for -1)…
+      this.drum.rolling = false;
+      this.drum.offset = -direction * DRUM_STEP;
+      // …then roll it into the middle
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => this.drum_settle())
+      );
+    },
+    drum_style(n) {
+      const y = -(n - this.input_units.value) * DRUM_STEP + this.drum.offset;
+      const distance = Math.min(1, Math.abs(y) / (DRUM_STEP * 2));
+      return {
+        transform: `translateY(${y}px) scale(${1 - distance * 0.25})`,
+        opacity: 1 - distance * 0.75
+      };
     },
     stepper_up(event) {
       const drag = this.stepper_drag;
@@ -322,6 +382,7 @@ export default {
       }
       drag.pressed = false;
       drag.active = false;
+      this.drum_settle();
     },
     stepper_swallow_click(event) {
       if (this.stepper_drag.just_dragged) {
@@ -707,22 +768,48 @@ export default {
   &._dragging {
     background-color: var(--tq-accent);
     color: var(--tq-on-accent);
-    transform: scale(1.04);
 
     ._step,
-    ._units {
+    ._drum-number {
       color: var(--tq-on-accent);
     }
-    ._units {
-      font-size: rem(22px);
-      font-weight: 600;
-    }
   }
-  ._units {
+
+  // The numbers roll inside the bar; the bar itself never moves
+  ._drum {
+    -webkit-mask-image: linear-gradient(
+      transparent,
+      #000 30%,
+      #000 70%,
+      transparent
+    );
+    flex: 1 1 auto;
+    mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+  ._drum-number {
     color: var(--tq-fg);
     font-family: "Roboto Flex", $graphene-font-family;
     font-size: rem(16px);
     font-variant-numeric: tabular-nums;
+    height: rem(28px);
+    left: 0;
+    line-height: rem(28px);
+    margin-top: rem(-14px);
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 50%;
+
+    &._current {
+      font-weight: 600;
+    }
+  }
+  ._drum._rolling ._drum-number {
+    transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 220ms ease;
   }
 }
 
