@@ -2,10 +2,25 @@
   <div
     :class="[
       'calc-controls-wrapper',
-      { _editing: editing, _typing: input_name.focus }
+      {
+        _editing: editing,
+        _typing: input_name.focus,
+        _dragging: stepper_drag.active
+      }
     ]"
     @dblclick="no_return"
   >
+    <!-- While the quantity is being dragged, nothing else can be touched -->
+    <transition name="fade">
+      <div
+        v-if="stepper_drag.active"
+        class="calc-lock"
+        aria-hidden="true"
+        @pointerdown.prevent.stop
+        @click.prevent.stop
+      />
+    </transition>
+
     <!-- Cancel / product field / confirm -->
     <div class="calc-actions">
       <button
@@ -82,7 +97,16 @@
         <div class="calc-pad" ontouchstart="">
           <div class="calc-grid">
             <!-- Quantity: right column, all four rows -->
-            <div class="calc-stepper" role="group" aria-label="Quantidade">
+            <div
+              :class="['calc-stepper', { _dragging: stepper_drag.active }]"
+              role="group"
+              aria-label="Quantidade: arraste para cima ou para baixo"
+              @pointerdown="stepper_down"
+              @pointermove="stepper_move"
+              @pointerup="stepper_up"
+              @pointercancel="stepper_up"
+              @click.capture="stepper_swallow_click"
+            >
               <button
                 type="button"
                 class="calc-key _step"
@@ -162,6 +186,15 @@ export default {
   data() {
     return {
       editing: false,
+      // Drag on the quantity column: up adds, down removes
+      stepper_drag: {
+        pressed: false,
+        active: false,
+        start_y: 0,
+        start_units: 1,
+        pointer_id: null,
+        just_dragged: false
+      },
       input_name: {
         value: "",
         focus: false
@@ -247,6 +280,56 @@ export default {
     }
   },
   methods: {
+    stepper_down(event) {
+      if (event.button !== undefined && event.button !== 0) return;
+      const drag = this.stepper_drag;
+      drag.pressed = true;
+      drag.active = false;
+      drag.just_dragged = false;
+      drag.start_y = event.clientY;
+      drag.start_units = this.input_units.value;
+      drag.pointer_id = event.pointerId;
+    },
+    stepper_move(event) {
+      const drag = this.stepper_drag;
+      if (!drag.pressed || event.pointerId !== drag.pointer_id) return;
+      const dy = drag.start_y - event.clientY; // positive = finger moved up
+      if (!drag.active) {
+        if (Math.abs(dy) < 6) return; // still a tap
+        drag.active = true;
+        // From now on every move goes to the stepper, wherever the finger is
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }
+      event.preventDefault();
+      const STEP_PX = 20;
+      const units = Math.min(
+        99,
+        Math.max(1, drag.start_units + Math.round(dy / STEP_PX))
+      );
+      if (units !== this.input_units.value) {
+        this.input_units.value = units;
+        if (navigator.vibrate) navigator.vibrate(5);
+      }
+    },
+    stepper_up(event) {
+      const drag = this.stepper_drag;
+      if (!drag.pressed) return;
+      if (drag.active) {
+        drag.just_dragged = true; // the click that follows is not a tap
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+          event.currentTarget.releasePointerCapture(event.pointerId);
+        }
+      }
+      drag.pressed = false;
+      drag.active = false;
+    },
+    stepper_swallow_click(event) {
+      if (this.stepper_drag.just_dragged) {
+        this.stepper_drag.just_dragged = false;
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    },
     // Keypad show/hide: animate the height of the outer box (the keys keep
     // their size) together with a fade
     keypad_animate(el, from, to, done) {
@@ -586,7 +669,24 @@ export default {
   }
 }
 
+.calc-lock {
+  background-color: rgba(9, 9, 11, 0.16);
+  inset: 0;
+  position: fixed;
+  touch-action: none;
+  z-index: 1;
+}
+.calc-controls-wrapper._dragging {
+  z-index: 1000; // above notifications too
+}
+
 .calc-stepper {
+  -webkit-user-select: none;
+  touch-action: none; // the page must not scroll while dragging
+  user-select: none;
+  position: relative;
+  z-index: 2; // stays above the lock layer
+  transition: background-color 160ms ease, transform 160ms ease;
   align-items: center;
   background-color: var(--tq-holo);
   border-radius: rem(9999px);
@@ -600,6 +700,23 @@ export default {
   ._step {
     height: rem(44px);
     width: 100%;
+  }
+  ._step {
+    touch-action: none;
+  }
+  &._dragging {
+    background-color: var(--tq-accent);
+    color: var(--tq-on-accent);
+    transform: scale(1.04);
+
+    ._step,
+    ._units {
+      color: var(--tq-on-accent);
+    }
+    ._units {
+      font-size: rem(22px);
+      font-weight: 600;
+    }
   }
   ._units {
     color: var(--tq-fg);
