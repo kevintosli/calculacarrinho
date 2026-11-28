@@ -1,169 +1,223 @@
 <template>
   <div
-    :class="['calc-controls-wrapper', { _editing: editing }]"
+    :class="[
+      'calc-controls-wrapper',
+      {
+        _editing: editing,
+        _typing: input_name.focus,
+        _dragging: stepper_drag.active
+      }
+    ]"
     @dblclick="no_return"
   >
-    <div class="calc-header flex-row">
+    <!-- While the quantity is being dragged, nothing else can be touched -->
+    <transition name="fade">
       <div
-        :class="[
-          'item-name',
-          {
-            '_initial-value': !input_name.value
-          }
-        ]"
+        v-if="stepper_drag.active"
+        class="calc-lock"
+        aria-hidden="true"
+        @pointerdown.prevent.stop
+        @click.prevent.stop
+      />
+    </transition>
+
+    <!-- Cancel / product field / confirm -->
+    <div class="calc-actions">
+      <button
+        type="button"
+        class="tq-round-button"
+        :aria-label="editing ? 'Cancelar edição' : 'Limpar valores digitados'"
+        :title="editing ? 'Cancelar edição' : 'Limpar'"
+        @click="close_action"
       >
-        <form autocomplete="false" action="#" @submit.prevent="input_get_blur">
+        <span class="ms" aria-hidden="true">close</span>
+      </button>
+
+      <div class="calc-field">
+        <button
+          type="button"
+          class="_keyboard"
+          aria-label="Digitar o nome do produto"
+          title="Digitar o nome do produto"
+          @click="focus_name"
+        >
+          <span class="ms" aria-hidden="true">keyboard</span>
+        </button>
+        <form
+          class="_name"
+          autocomplete="off"
+          action="#"
+          @submit.prevent="input_get_blur"
+        >
           <input
+            id="calc-item-name"
+            ref="item_name"
             class="_name-input"
             type="text"
             name="product"
-            ref="item_name"
             v-model="input_name.value"
-            placeholder="Nome do item"
+            aria-label="Nome do produto (opcional)"
             enterkeyhint="done"
             autocomplete="off"
             @focus="input_focus"
             @blur="input_blur"
           />
         </form>
+        <div
+          :class="['_price', { _empty: is_initial_input_price }]"
+          aria-live="polite"
+        >
+          <span>R$</span>
+          <span>{{ input_amount_label }}</span>
+        </div>
       </div>
-      <div class="item-un flex-shrink-0">{{ input_units.value }}</div>
-      <div
-        :class="[
-          'item-price',
-          {
-            '_initial-value': is_initial_input_price
-          }
-        ]"
+
+      <button
+        type="button"
+        class="tq-round-button"
+        :aria-label="editing ? 'Salvar alterações' : 'Adicionar ao carrinho'"
+        :title="editing ? 'Salvar alterações' : 'Adicionar ao carrinho'"
+        @click="confirm_action"
       >
-        {{
-          Number(input_price.value).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL"
-          })
-        }}
-      </div>
+        <span class="ms" aria-hidden="true">check</span>
+      </button>
     </div>
-    <div class="calc-controls" ontouchstart="">
-      <!-- Interaction -->
-      <div class="calc-key" style="grid-area: add;">
-        <div
-          :class="[
-            'calc-inner-key grphn-icon __accent',
-            { _invisible: editing }
-          ]"
-          key="add"
-          title="Adicionar à lista"
-          @click="add_to_list"
-        >
-          arrow_up
-        </div>
-        <div
-          :class="[
-            'calc-inner-key grphn-icon __accent',
-            { _invisible: !editing }
-          ]"
-          key="save"
-          title="Salvar alterações"
-          @click="update_to_list"
-        >
-          checkmark
-        </div>
-      </div>
-      <div
-        class="calc-key"
-        style="grid-area: plus;"
-        title="Aumentar quantidade"
-        @click="input_units.add(1)"
-      >
-        <div class="calc-inner-key grphn-icon __accent">plus</div>
-      </div>
-      <div
-        class="calc-key"
-        style="grid-area: minus;"
-        title="Diminuir quantidade"
-        @click="input_units.remove(1)"
-      >
-        <div class="calc-inner-key grphn-icon __accent">minus</div>
-      </div>
-      <div class="calc-key" style="grid-area: reset;">
-        <div
-          v-if="!editing"
-          class="calc-inner-key __accent"
-          title="Limpar"
-          @click="reset_controls"
-        >
-          {{
-            is_initial_input_units &&
-            is_initial_input_price &&
-            is_initial_input_name
-              ? "AC"
-              : "C"
-          }}
-        </div>
-        <div
-          v-else
-          class="calc-inner-key grphn-icon __delete"
-          @click="remove_from_list"
-        >
-          trashcan
-        </div>
-      </div>
-      <!-- Numbers -->
-      <div class="calc-key" style="grid-area: r3c1;">
-        <div class="calc-inner-key" @click="input_price.update(1)">1</div>
-      </div>
-      <div class="calc-key" style="grid-area: r3c2;">
-        <div class="calc-inner-key" @click="input_price.update(2)">2</div>
-      </div>
-      <div class="calc-key" style="grid-area: r3c3;">
-        <div class="calc-inner-key" @click="input_price.update(3)">3</div>
-      </div>
-      <div class="calc-key" style="grid-area: r2c1;">
-        <div class="calc-inner-key" @click="input_price.update(4)">4</div>
-      </div>
-      <div class="calc-key" style="grid-area: r2c2;">
-        <div class="calc-inner-key" @click="input_price.update(5)">5</div>
-      </div>
-      <div class="calc-key" style="grid-area: r2c3;">
-        <div class="calc-inner-key" @click="input_price.update(6)">6</div>
-      </div>
-      <div class="calc-key" style="grid-area: r1c1;">
-        <div class="calc-inner-key" @click="input_price.update(7)">7</div>
-      </div>
-      <div class="calc-key" style="grid-area: r1c2;">
-        <div class="calc-inner-key" @click="input_price.update(8)">8</div>
-      </div>
-      <div class="calc-key" style="grid-area: r1c3;">
-        <div class="calc-inner-key" @click="input_price.update(9)">9</div>
-      </div>
-      <div class="calc-key __key-zero" style="grid-area: zero;">
-        <div class="calc-inner-key" @click="input_price.update(0)">
-          <div class="__key-zero-1" style="grid-area: key1;">0</div>
-          <div class="__key-zero-2" style="grid-area: key2;">0</div>
-        </div>
-      </div>
-      <div class="calc-key" style="grid-area: erase;">
-        <div
-          :class="['calc-inner-key grphn-icon']"
-          @click="input_price.backspace"
-        >
-          delete_left
+
+    <!-- Hidden while the phone keyboard is open for the product name -->
+    <transition
+      :css="false"
+      @before-enter="keypad_before_enter"
+      @enter="keypad_enter"
+      @after-enter="keypad_after"
+      @before-leave="keypad_before_leave"
+      @leave="keypad_leave"
+      @after-leave="keypad_after"
+    >
+      <div v-show="!input_name.focus" class="calc-keypad">
+        <div class="calc-pad" ontouchstart="">
+          <div class="calc-grid">
+            <!-- Quantity: right column, all four rows -->
+            <div
+              :class="['calc-stepper', { _dragging: stepper_drag.active }]"
+              role="group"
+              aria-label="Quantidade: arraste para baixo para aumentar"
+              @pointerdown="stepper_down"
+              @pointermove="stepper_move"
+              @pointerup="stepper_up"
+              @pointercancel="stepper_up"
+              @click.capture="stepper_swallow_click"
+            >
+              <button
+                type="button"
+                class="calc-key _step"
+                aria-label="Aumentar quantidade"
+                title="Aumentar quantidade"
+                @click="step_units(1)"
+              >
+                <span class="ms" aria-hidden="true">keyboard_arrow_up</span>
+              </button>
+              <!-- Number drum: larger numbers wait above, smaller below -->
+              <div
+                :class="['_drum', { _rolling: drum.rolling }]"
+                aria-live="polite"
+                :aria-label="`${input_units.value} unidades`"
+              >
+                <span
+                  v-for="n in drum_numbers"
+                  :key="n"
+                  :class="[
+                    '_drum-number',
+                    { _current: n === input_units.value }
+                  ]"
+                  :style="drum_style(n)"
+                  aria-hidden="true"
+                  >{{ n }}</span
+                >
+              </div>
+              <button
+                type="button"
+                :class="['calc-key _step', { _muted: is_initial_input_units }]"
+                aria-label="Diminuir quantidade"
+                title="Diminuir quantidade"
+                @click="step_units(-1)"
+              >
+                <span class="ms" aria-hidden="true">keyboard_arrow_down</span>
+              </button>
+            </div>
+
+            <button
+              v-for="digit in [7, 8, 9, 4, 5, 6, 1, 2, 3]"
+              :key="digit"
+              type="button"
+              class="calc-key _digit"
+              @click="input_price.update(digit)"
+            >
+              {{ digit }}
+            </button>
+
+            <button
+              v-if="editing"
+              type="button"
+              class="calc-key _delete"
+              aria-label="Remover produto do carrinho"
+              title="Remover produto do carrinho"
+              @click="remove_from_list"
+            >
+              <span class="ms" aria-hidden="true">delete</span>
+            </button>
+            <span v-else class="calc-key _digit _muted" aria-hidden="true">
+              ·
+            </span>
+            <button
+              type="button"
+              class="calc-key _digit"
+              @click="input_price.update(0)"
+            >
+              0
+            </button>
+            <button
+              type="button"
+              :class="['calc-key', { _muted: is_initial_input_price }]"
+              aria-label="Apagar último dígito"
+              title="Apagar último dígito"
+              @click="input_price.backspace"
+            >
+              <span class="ms" aria-hidden="true">backspace</span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script>
 import { no_return } from "@js/utils";
 import { mapMutations, mapGetters, mapActions } from "vuex";
+import { format_amount } from "@js/currency";
+
+// Distance in px between numbers on the quantity drum (one step of drag)
+const DRUM_STEP = 28;
 
 export default {
   name: "CalcControls",
   data() {
     return {
       editing: false,
+      // Drag on the quantity column: up adds, down removes
+      stepper_drag: {
+        pressed: false,
+        active: false,
+        start_y: 0,
+        start_units: 1,
+        pointer_id: null,
+        just_dragged: false
+      },
+      // Visual offset of the drum in px (follows the finger between steps)
+      drum: {
+        offset: 0,
+        rolling: false
+      },
       input_name: {
         value: "",
         focus: false
@@ -172,19 +226,23 @@ export default {
         value: "0.00",
         update: key_value => {
           if (key_value == "reset") return (this.input_price.value = "0.00");
-          if (Number(this.input_price.value) <= 1000) {
-            let VALUE = this.input_price.value;
-            VALUE = String(VALUE)
-              .replace(".", "") // Removing dot
-              .replace(/(\d*)/, `$1${key_value}`) // Adding pressed key to end
-              .replace(/(\d*)(\d{2})/, "$1.$2") // Adding dot again
-              .replace(/(0?)(\d+\.\d*)/g, "$2"); // Removing leading zero
-            this.input_price.value = VALUE;
+          if (Number(this.input_price.value) > 1000) {
+            return this.notify({
+              type: "alert",
+              description: "Esse é o maior preço que dá para digitar",
+              duration: 2500
+            });
           }
+          let VALUE = this.input_price.value;
+          VALUE = String(VALUE)
+            .replace(".", "") // Removing dot
+            .replace(/(\d*)/, `$1${key_value}`) // Adding pressed key to end
+            .replace(/(\d*)(\d{2})/, "$1.$2") // Adding dot again
+            .replace(/(0?)(\d+\.\d*)/g, "$2"); // Removing leading zero
+          this.input_price.value = VALUE;
         },
         backspace: () => {
-          if (this.input_price.value == 0)
-            return window.console.log("Não pode apagar mais");
+          if (this.input_price.value == 0) return;
 
           let VALUE = this.input_price.value;
           VALUE = String(VALUE)
@@ -200,7 +258,13 @@ export default {
       input_units: {
         value: 1,
         add: quantity => {
-          if (this.input_units.value == 99) return false;
+          if (this.input_units.value == 99) {
+            return this.notify({
+              type: "alert",
+              description: "A quantidade máxima é 99",
+              duration: 2500
+            });
+          }
           this.input_units.value += quantity;
         },
         remove: quantity => {
@@ -225,6 +289,17 @@ export default {
   },
   computed: {
     ...mapGetters(["cart_list_selected"]),
+    drum_numbers() {
+      const value = this.input_units.value;
+      const numbers = [];
+      for (let n = value - 2; n <= value + 2; n++) {
+        if (n >= 1 && n <= 99) numbers.push(n);
+      }
+      return numbers;
+    },
+    input_amount_label() {
+      return format_amount(this.input_price.value);
+    },
     is_initial_input_name() {
       return this.input_name.value === "";
     },
@@ -236,21 +311,188 @@ export default {
     }
   },
   methods: {
+    stepper_down(event) {
+      if (event.button !== undefined && event.button !== 0) return;
+      const drag = this.stepper_drag;
+      drag.pressed = true;
+      drag.active = false;
+      drag.just_dragged = false;
+      drag.start_y = event.clientY;
+      drag.start_units = this.input_units.value;
+      drag.pointer_id = event.pointerId;
+    },
+    stepper_move(event) {
+      const drag = this.stepper_drag;
+      if (!drag.pressed || event.pointerId !== drag.pointer_id) return;
+      const dy = event.clientY - drag.start_y; // positive = finger moved down
+      if (!drag.active) {
+        if (Math.abs(dy) < 6) return; // still a tap
+        drag.active = true;
+        this.drum.rolling = false;
+        // From now on every move goes to the stepper, wherever the finger is
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }
+      event.preventDefault();
+      // Pulling down brings the next larger number in from the top
+      const wanted = drag.start_units + Math.round(dy / DRUM_STEP);
+      const units = Math.min(99, Math.max(1, wanted));
+      let offset = dy - (units - drag.start_units) * DRUM_STEP;
+      if (units !== wanted) offset = offset * 0.25; // resist past 1 or 99
+      this.drum.offset = Math.max(-DRUM_STEP, Math.min(DRUM_STEP, offset));
+      if (units !== this.input_units.value) {
+        this.input_units.value = units;
+        if (navigator.vibrate) navigator.vibrate(5);
+      }
+    },
+    // Snap the drum back so the current number sits in the middle
+    drum_settle() {
+      this.drum.rolling = true;
+      this.drum.offset = 0;
+    },
+    // Arrow taps roll the drum one step
+    step_units(direction) {
+      const before = this.input_units.value;
+      if (direction > 0) this.input_units.add(1);
+      else this.input_units.remove(1);
+      if (this.input_units.value === before) return;
+      // Start where the new number was (above for +1, below for -1)…
+      this.drum.rolling = false;
+      this.drum.offset = -direction * DRUM_STEP;
+      // …then roll it into the middle
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => this.drum_settle())
+      );
+    },
+    drum_style(n) {
+      const y = -(n - this.input_units.value) * DRUM_STEP + this.drum.offset;
+      const distance = Math.min(1, Math.abs(y) / (DRUM_STEP * 2));
+      return {
+        transform: `translateY(${y}px) scale(${1 - distance * 0.25})`,
+        opacity: 1 - distance * 0.75
+      };
+    },
+    stepper_up(event) {
+      const drag = this.stepper_drag;
+      if (!drag.pressed) return;
+      if (drag.active) {
+        drag.just_dragged = true; // the click that follows is not a tap
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+          event.currentTarget.releasePointerCapture(event.pointerId);
+        }
+      }
+      drag.pressed = false;
+      drag.active = false;
+      this.drum_settle();
+    },
+    stepper_swallow_click(event) {
+      if (this.stepper_drag.just_dragged) {
+        this.stepper_drag.just_dragged = false;
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    },
+    // Keypad show/hide: animate the height of the outer box (the keys keep
+    // their size) together with a fade
+    keypad_animate(el, from, to, done) {
+      const reduce =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce) return done();
+      el.style.overflow = "hidden";
+      el.style.height = `${from.height}px`;
+      el.style.opacity = from.opacity;
+      el.style.transform = `translateY(${from.y}px)`;
+      void el.offsetHeight; // apply the start values before transitioning
+      el.style.transition =
+        "height 260ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease, transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1)";
+      el.style.height = `${to.height}px`;
+      el.style.opacity = to.opacity;
+      el.style.transform = `translateY(${to.y}px)`;
+      let finished = false;
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        el.removeEventListener("transitionend", on_end);
+        done();
+      };
+      const on_end = event => {
+        if (event.target === el && event.propertyName === "height") finish();
+      };
+      el.addEventListener("transitionend", on_end);
+      setTimeout(finish, 400); // in case transitionend never fires
+    },
+    keypad_before_enter(el) {
+      el.style.height = "0px";
+      el.style.opacity = 0;
+    },
+    keypad_enter(el, done) {
+      el.style.height = "";
+      const height = el.scrollHeight;
+      this.keypad_animate(
+        el,
+        { height: 0, opacity: 0, y: 12 },
+        { height, opacity: 1, y: 0 },
+        done
+      );
+    },
+    keypad_before_leave(el) {
+      el.style.height = `${el.offsetHeight}px`;
+    },
+    keypad_leave(el, done) {
+      this.keypad_animate(
+        el,
+        { height: el.offsetHeight, opacity: 1, y: 0 },
+        { height: 0, opacity: 0, y: 12 },
+        done
+      );
+    },
+    keypad_after(el) {
+      el.style.height = "";
+      el.style.opacity = "";
+      el.style.overflow = "";
+      el.style.transform = "";
+      el.style.transition = "";
+    },
     no_return,
-    ...mapMutations(["cart_add", "notify"]),
+    ...mapMutations(["cart_add", "cart_unselect_all", "notify"]),
     ...mapActions(["cart_update", "cart_remove"]),
+    // ✕: cancel the edit, or clear what was typed
+    close_action() {
+      if (this.editing) {
+        this.cart_unselect_all();
+      } else {
+        this.reset_controls();
+      }
+    },
+    // ✓: save the edit, or add a new product
+    confirm_action() {
+      if (this.editing) {
+        this.update_to_list();
+      } else {
+        this.add_to_list();
+      }
+    },
+    focus_name() {
+      this.$refs.item_name.focus();
+    },
     add_to_list() {
       if (this.is_initial_input_price) {
         this.notify({
           type: "alert",
-          description: "Digite um valor para adicionar à lista",
+          description: "Digite o preço no teclado para adicionar",
           duration: 2000
         });
       } else {
+        const name = this.input_name.value.trim();
         this.cart_add({
-          name: this.input_name.value,
+          name,
           price: this.input_price.value,
           units: this.input_units.value
+        });
+        this.notify({
+          type: "success",
+          description: `${name || "Produto"} adicionado ao carrinho`,
+          duration: 2000
         });
         this.reset_controls();
       }
@@ -290,7 +532,7 @@ export default {
       this.input_name.focus = true;
     },
     input_blur() {
-      this.input_name.value.trim();
+      this.input_name.value = this.input_name.value.trim();
       this.input_name.focus = false;
     },
     input_get_blur() {
@@ -306,173 +548,287 @@ export default {
 @import "@scss/variables";
 
 .calc-controls-wrapper {
-  background-color: var(--color-ui-background);
-  box-shadow: inset 0 rem(1px) 0 var(--color-ui-separator);
+  display: flex;
+  flex-direction: column;
+  gap: rem(16px);
+  padding: rem(8px) rem(24px) rem(24px);
+  position: relative;
   z-index: 100;
 
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    padding-bottom: calc(var(--app-view-padding) + env(safe-area-inset-bottom));
+    padding-bottom: calc(#{rem(16px)} + env(safe-area-inset-bottom));
+  }
 
-    @media (max-width: 414px) and (min-height: 896px) {
-      padding-bottom: env(safe-area-inset-bottom);
+  // Soft dimming towards the bottom of the screen, as in the design
+  &::before {
+    background: linear-gradient(to bottom, transparent, var(--tq-dim));
+    bottom: 0;
+    content: "";
+    height: rem(371px);
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    z-index: -1;
+  }
+
+  button {
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    background: none;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    padding: 0;
+    touch-action: manipulation;
+  }
+  button:focus-visible {
+    outline: rem(2px) solid var(--tq-fg);
+    outline-offset: rem(2px);
+  }
+}
+
+.calc-actions {
+  align-items: center;
+  display: flex;
+  gap: rem(12px);
+  padding: 0 rem(8px);
+
+  .tq-round-button {
+    align-items: center;
+    background-color: var(--tq-card);
+    border-radius: 50%;
+    box-shadow: var(--tq-shadow);
+    color: var(--tq-fg);
+    display: flex;
+    flex-shrink: 0;
+    height: rem(56px);
+    justify-content: center;
+    transition: transform 120ms ease;
+    width: rem(56px);
+
+    .ms {
+      font-variation-settings: "FILL" 0, "wght" 280, "GRAD" 150, "opsz" 28;
     }
-    @media (max-width: 375px) and (min-height: 812px) {
-      padding-bottom: env(safe-area-inset-bottom);
+    &:active {
+      transform: scale(0.94);
+    }
+  }
+}
+
+.calc-field {
+  align-items: center;
+  background-color: var(--tq-card);
+  border-radius: var(--tq-radius-panel);
+  box-shadow: var(--tq-shadow);
+  display: flex;
+  flex: 1 1 0;
+  gap: rem(4px);
+  min-width: 0;
+  padding: rem(4px);
+
+  ._keyboard {
+    align-items: center;
+    border-radius: 50%;
+    color: var(--tq-fg);
+    display: flex;
+    flex-shrink: 0;
+    height: rem(48px);
+    justify-content: center;
+    width: rem(48px);
+
+    .ms {
+      font-variation-settings: "FILL" 0, "wght" 280, "GRAD" -50, "opsz" 28;
+    }
+    &:active {
+      background-color: var(--tq-holo);
+    }
+  }
+  ._name {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  ._name-input {
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--tq-fg);
+    font: inherit;
+    font-size: rem(16px);
+    line-height: 1.6;
+    outline: none;
+    padding: 0;
+    text-overflow: ellipsis;
+    width: 100%;
+
+    &::placeholder {
+      color: var(--tq-fg-disabled);
+    }
+  }
+  ._price {
+    color: var(--tq-fg);
+    display: flex;
+    flex-shrink: 0;
+    font-size: rem(16px);
+    font-variant-numeric: tabular-nums;
+    gap: rem(4px);
+    line-height: 1.6;
+    padding: 0 rem(8px);
+    white-space: nowrap;
+
+    &._empty {
+      color: var(--tq-fg-disabled);
+    }
+  }
+}
+
+.calc-pad {
+  background-color: var(--tq-card);
+  border-radius: var(--tq-radius-panel);
+  box-shadow: var(--tq-shadow);
+  margin: rem(1px);
+  padding: rem(12px);
+}
+
+.calc-grid {
+  --key-height: #{rem(48px)};
+  display: grid;
+  gap: rem(8px);
+  grid-template-columns: repeat(3, minmax(0, 1fr)) rem(48px);
+  grid-template-rows: repeat(4, var(--key-height));
+
+  @media (max-height: 640px) {
+    --key-height: #{rem(40px)};
+  }
+}
+
+.calc-key {
+  align-items: center;
+  border-radius: rem(9999px);
+  color: var(--tq-fg);
+  display: flex;
+  justify-content: center;
+  transition: background-color 120ms ease;
+
+  &:active {
+    background-color: var(--tq-holo);
+  }
+  &._digit {
+    font-family: "Roboto Flex", $graphene-font-family;
+    font-size: rem(20px);
+    font-variant-numeric: tabular-nums;
+  }
+  &._muted {
+    color: var(--tq-fg-disabled);
+  }
+  &._delete {
+    color: var(--tq-destructive);
+  }
+  .ms {
+    font-variation-settings: "FILL" 0, "wght" 280, "GRAD" 0, "opsz" 28;
+  }
+}
+
+.calc-lock {
+  background-color: rgba(9, 9, 11, 0.16);
+  inset: 0;
+  position: fixed;
+  touch-action: none;
+  z-index: 1;
+}
+.calc-controls-wrapper._dragging {
+  z-index: 1000; // above notifications too
+}
+
+.calc-stepper {
+  -webkit-user-select: none;
+  touch-action: none; // the page must not scroll while dragging
+  user-select: none;
+  position: relative;
+  z-index: 2; // stays above the lock layer
+  transition: background-color 160ms ease, transform 160ms ease;
+  align-items: center;
+  background-color: var(--tq-holo);
+  border-radius: rem(9999px);
+  display: flex;
+  flex-direction: column;
+  grid-column: 4;
+  grid-row: 1 / span 4;
+  justify-content: space-between;
+  padding: 0 rem(4px);
+
+  ._step {
+    height: rem(44px);
+    width: 100%;
+  }
+  ._step {
+    touch-action: none;
+  }
+  &._dragging {
+    background-color: var(--tq-accent);
+    color: var(--tq-on-accent);
+
+    ._step,
+    ._drum-number {
+      color: var(--tq-on-accent);
     }
   }
 
-  &._editing {
-    --color-ui-background: var(--color-ui-background-secondary);
-    // box-shadow: inset 0 rem(3px) 0 var(--color-ui-accent);
-  }
-
-  .calc-header {
-    color: var(--color-text-heading);
-    padding: rem(8px) calc(var(--app-view-padding) + #{rem(4px)});
-    font-weight: $graphene-font-weight-semibold;
-
-    @media (max-height: 568px) {
-      @include graphene-font-style-paragraph();
-      font-weight: $graphene-font-weight-semibold;
-      line-height: rem(36px);
-    }
-    @media (min-height: 569px) {
-      @include graphene-font-style-interest();
-      font-size: rem(18px);
-      padding: {
-        bottom: rem(16px);
-        top: rem(16px);
-      }
-    }
-
-    ._initial-value {
-      color: var(--color-text-placeholder);
-    }
-    ._name-input {
-      -webkit-box-shadow: inset 0 0 0 999px var(--color-ui-background) !important;
-      color: var(--color-text-heading);
-      width: 100%;
-
-      &::placeholder {
-        color: var(--color-text-placeholder);
-      }
-    }
-    .item-name,
-    .item-un,
-    .item-price {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-
-  .calc-controls {
-    border-radius: var(--app-view-padding);
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr;
-    grid-template-areas:
-      "r1c1 r1c2 r1c3 reset"
-      "r2c1 r2c2 r2c3 plus"
-      "r3c1 r3c2 r3c3 minus"
-      "zero zero erase add";
-    grid-gap: rem(2px);
-    margin: 0 var(--app-view-padding);
+  // The numbers roll inside the bar; the bar itself never moves
+  ._drum {
+    -webkit-mask-image: linear-gradient(
+      transparent,
+      #000 30%,
+      #000 70%,
+      transparent
+    );
+    flex: 1 1 auto;
+    mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
     overflow: hidden;
-    transform: translate3d(0, 0, 0);
+    position: relative;
+    width: 100%;
+  }
+  ._drum-number {
+    color: var(--tq-fg);
+    font-family: "Roboto Flex", $graphene-font-family;
+    font-size: rem(16px);
+    font-variant-numeric: tabular-nums;
+    height: rem(28px);
+    left: 0;
+    line-height: rem(28px);
+    margin-top: rem(-14px);
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 50%;
 
-    .calc-key {
-      font-size: $graphene-font-size-interest;
-      font-weight: $graphene-font-weight-regular;
-      min-height: rem(48px);
-      position: relative;
-      transform: translate3d(0, 0, 0);
-
-      @media (max-height: 568px) {
-        @include graphene-font-style-interest();
-        font-weight: $graphene-font-weight-regular;
-      }
-      @media (min-height: 569px) {
-        @include graphene-font-style-subheading();
-        min-height: rem(64px);
-        font-weight: $graphene-font-weight-regular;
-      }
-
-      .calc-inner-key {
-        align-items: center;
-        background-color: var(--color-ui-separator);
-        bottom: 0;
-        display: inline-flex;
-        justify-content: center;
-        left: 0;
-        right: 0;
-        position: absolute;
-        top: 0;
-        transform: translate3d(0, 0, 0);
-        transition-property: background-color;
-        transition-duration: var(--motion-duration-regular);
-        transition-timing-function: linear;
-
-        &:not(._disabled):hover:active {
-          background-color: var(--color-text-placeholder);
-          transition-duration: 0ms;
-        }
-        &._invisible {
-          position: absolute;
-          visibility: hidden;
-        }
-        &:not(._invisible) {
-          animation: pulse;
-          animation-duration: var(--motion-duration-regular);
-          animation-iteration-count: 1;
-          animation-play-state: running;
-          font-size: inherit;
-          visibility: visible;
-
-          @keyframes pulse {
-            from {
-              font-size: rem(32px);
-            }
-            to {
-              font-size: rem(24px);
-            }
-          }
-        }
-        &.__accent {
-          background-color: var(--color-ui-accent);
-          color: var(--color-ui-background);
-
-          &:not(._disabled):hover:active {
-            background-color: var(--color-text-heading);
-          }
-        }
-        &.__delete {
-          background-color: var(--color-ui-delete);
-          color: var(--color-ui-background);
-
-          &:not(._disabled):hover:active {
-            background-color: var(--color-text-heading);
-          }
-        }
-      }
+    &._current {
+      font-weight: 600;
     }
+  }
+  ._drum._rolling ._drum-number {
+    transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 220ms ease;
+  }
+}
 
-    .__key-zero {
-      display: inline-grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template: "key1 key2";
-      grid-gap: rem(8px);
-      justify-content: stretch;
-
-      div {
-        flex-grow: 1;
-        text-align: center;
-        width: 100%;
-      }
-      .__key-zero-2 {
-        color: transparent;
-      }
-    }
+@media (max-height: 640px) {
+  .calc-controls-wrapper {
+    gap: rem(12px);
+    padding-left: rem(16px);
+    padding-right: rem(16px);
+  }
+  .calc-actions .tq-round-button {
+    height: rem(48px);
+    width: rem(48px);
+  }
+  .calc-field ._keyboard {
+    height: rem(40px);
+    width: rem(40px);
+  }
+  .calc-stepper ._step {
+    height: rem(36px);
   }
 }
 </style>

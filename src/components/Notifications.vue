@@ -6,7 +6,11 @@
         v-for="notification in notification_list"
         :key="notification.description.replace(/\s/g, '-')"
       >
-        <notification-block class="inline-flex flex-row">
+        <notification-block
+          class="inline-flex flex-row"
+          role="status"
+          aria-live="polite"
+        >
           <div class="_description">
             <span v-if="notification.type == 'info'" class="_icon grphn-icon"
               >infomark_circle</span
@@ -19,6 +23,14 @@
             >
             {{ notification.description }}
           </div>
+          <button
+            v-if="notification.button"
+            type="button"
+            class="_button"
+            @click="$store.dispatch(notification.button.action)"
+          >
+            {{ notification.button.label }}
+          </button>
         </notification-block>
       </notification-block-wrapper>
     </transition-group>
@@ -62,9 +74,25 @@ notification-list {
       pointer-events: auto;
       @include graphene-font-style-label();
 
+      align-items: center;
+
       ._icon {
         font-size: rem(18px);
         margin-right: rem(4px);
+      }
+      ._button {
+        -webkit-appearance: none;
+        background: none;
+        border: 0;
+        border-left: rem(1px) solid currentColor;
+        color: inherit;
+        cursor: pointer;
+        font: inherit;
+        font-weight: $graphene-font-weight-semibold;
+        margin: rem(-12px) rem(-12px) rem(-12px) rem(12px);
+        padding: rem(12px) rem(16px);
+        text-decoration: underline;
+        text-underline-offset: rem(3px);
       }
     }
   }

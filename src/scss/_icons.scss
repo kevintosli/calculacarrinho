@@ -7,7 +7,8 @@ $__font_path: "./assets/fonts/";
 
 @font-face {
   font-family: "GrapheneIconsPro";
-  src: local("GrapheneIconsPro"), url($__font_path+"GrapheneIconsPro.ttf") format("truetype"), url($__font_path+"GrapheneIconsPro.woff") format("woff");
+  // Subset with only the icons the app uses (see scripts/subset-icons.py)
+  src: url($__font_path+"GrapheneIconsPro.subset.woff2") format("woff2"), url($__font_path+"GrapheneIconsPro.subset.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: block;

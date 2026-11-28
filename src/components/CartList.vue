@@ -1,42 +1,48 @@
 <template>
-  <cartlist class="flex-col flex-shrink-0 relative" :key="cart_list_updates">
-    <transition-group name="pop">
+  <cartlist class="flex-col flex-shrink-0 relative">
+    <span class="_rows">
       <CartListItem
         v-for="(item, index) in list"
+        :key="item.id"
         :name="item.name"
         :units="item.units"
-        :price="String(item.price * item.units)"
+        :price="item.price * item.units"
         :selected="item.selected"
         :item-index="index"
-        :key="`${index}-${item.selected}`"
       />
-    </transition-group>
+    </span>
   </cartlist>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import CartListItem from "@components/CartListItem";
+
 export default {
   name: "CartList",
   components: {
-    CartListItem: () => import("@components/CartListItem")
+    CartListItem
   },
   props: {
     list: {
       type: Array,
       required: true
     }
-  },
-  computed: {
-    ...mapGetters(["cart_list", "cart_list_updates"])
   }
 };
 </script>
 
 <style lang="scss">
 @import "@scss/_utils";
-@import "@scss/_typography";
 
 cartlist {
+  background-color: var(--tq-card);
+  border-radius: var(--tq-radius-card);
+  margin: 0 var(--app-view-padding);
+  padding: rem(8px);
+
+  ._rows {
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>

@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
 /dist
+/dist-ta-quanto
 
 # local env files
 .env.local

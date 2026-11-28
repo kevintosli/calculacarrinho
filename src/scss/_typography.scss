@@ -2,11 +2,12 @@
 // http://bit.ly/graphenedesign
 // Typography tokens and styles
 
-// Font import from Google Fonts
-@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700&display=swap");
+// Geist, Roboto Flex and Material Symbols are loaded from Google Fonts in
+// public/index.html (a <link> there starts the download sooner than @import)
 
-$__fonts-alt: "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
-$__font-family: "Source Sans Pro";
+$__fonts-alt: -apple-system, "SF Pro Text", "Segoe UI", Helvetica, Arial,
+  sans-serif;
+$__font-family: "Geist";
 $graphene-font-family: #{$__font-family}, #{$__fonts-alt};
 
 $font-sizes: (

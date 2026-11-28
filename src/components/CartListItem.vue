@@ -1,40 +1,34 @@
 <template>
   <cartlist-item
-    :class="[
-      'flex-row relative',
-      {
-        _selected: selected
-      }
-    ]"
+    :class="{ _selected: selected }"
     :data-item-index="itemIndex"
+    role="button"
+    tabindex="0"
+    :aria-pressed="selected ? 'true' : 'false'"
+    :aria-label="
+      `${name || 'Sem nome'}, ${units} ${
+        units === 1 ? 'unidade' : 'unidades'
+      }, R$ ${amount_label}. Toque para editar`
+    "
     @click="select_item"
+    @keydown.enter.prevent="select_item"
+    @keydown.space.prevent="select_item"
     ontouchstart=""
   >
-    <div
-      :class="[
-        'item-name',
-        {
-          _unnamed: !name
-        }
-      ]"
-    >
+    <span :class="['item-name', { _unnamed: !name }]">
       {{ name || "Sem nome" }}
-    </div>
-    <div class="item-un">{{ units }}</div>
-    <div class="item-price">
-      {{
-        Number(price).toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL"
-        })
-      }}
-    </div>
-    <hr class="__separator absolute pin-t" />
+    </span>
+    <span class="item-un">{{ units }}</span>
+    <span class="item-price">
+      <span class="_symbol">R$</span>
+      <span class="_amount">{{ amount_label }}</span>
+    </span>
   </cartlist-item>
 </template>
 
 <script>
 import { mapActions } from "vuex";
+import { format_amount } from "@js/currency";
 
 export default {
   name: "ListItem",
@@ -45,7 +39,7 @@ export default {
       default: 1
     },
     price: {
-      type: String,
+      type: Number,
       required: true
     },
     selected: {
@@ -54,8 +48,13 @@ export default {
     },
     itemIndex: Number
   },
+  computed: {
+    amount_label() {
+      return format_amount(this.price);
+    }
+  },
   methods: {
-    ...mapActions(["cart_select", "cart_remove"]),
+    ...mapActions(["cart_select"]),
     select_item() {
       this.cart_select(this.itemIndex);
     }
@@ -65,52 +64,65 @@ export default {
 
 <style lang="scss">
 @import "@scss/_utils";
-@import "@scss/variables";
 
 cartlist-item {
-  line-height: rem(44px);
-  overflow: hidden;
-  padding: 0 var(--app-view-padding);
+  align-items: center;
+  border-radius: rem(9999px);
+  color: var(--tq-fg);
+  cursor: pointer;
+  display: flex;
+  font-size: rem(16px);
+  gap: rem(8px);
+  height: rem(44px);
+  line-height: 1.6;
+  padding: 0 rem(12px);
+  transition: background-color 160ms ease;
+  -webkit-tap-highlight-color: transparent;
 
-  &:first-of-type {
-    .__separator {
-      display: none;
-    }
+  &:not(._selected):active {
+    background-color: var(--tq-holo);
   }
-  &:not(._selected):hover:active {
-    background-color: var(--color-ui-listalt);
-  }
-  .__separator {
-    background-color: var(--color-ui-separator);
-    left: var(--app-view-padding);
-    height: rem(1px);
-    right: var(--app-view-padding);
+  &:focus-visible {
+    outline: rem(2px) solid var(--tq-fg);
+    outline-offset: rem(-2px);
   }
   &._selected {
-    background-color: var(--color-ui-accent);
-    color: var(--color-ui-background);
+    background-color: var(--tq-accent);
+    color: var(--tq-on-accent);
 
-    .item-name {
-      &._unnamed {
-        color: inherit;
-      }
-    }
-    .__separator {
-      opacity: 0;
-      visibility: hidden;
+    .item-name._unnamed {
+      color: inherit;
     }
   }
 
-  .item-name,
-  .item-un,
-  .item-price {
+  .item-name {
+    flex: 1 1 0;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-  .item-name {
+
     &._unnamed {
-      color: var(--color-text-placeholder);
+      color: var(--tq-fg-disabled);
+    }
+  }
+  .item-un {
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    width: rem(48px);
+  }
+  .item-price {
+    display: flex;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    gap: rem(8px);
+    min-width: rem(80px);
+    white-space: nowrap;
+
+    ._amount {
+      flex: 1 1 auto;
+      text-align: right;
     }
   }
 }
